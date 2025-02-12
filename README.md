@@ -24,6 +24,6 @@ Ensure you have the following installed:
 
 ### **Clone and Install Dependencies**  
 ```sh
-git clone https://github.com/your-username/recall.git  
+git clone git@github.com:mindsgn/recall.git
 cd recall  
 npm install  # or yarn install
