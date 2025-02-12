@@ -1,36 +1,17 @@
-import { StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-import { useEffect, } from 'react';
-import { useQuestion } from '@/src/context/question';
-import { Quiz } from '@/src/components/quizComponents';
-import { Points } from '@/src/components/pointsComponent';
+import { StyleSheet, View, Text } from 'react-native';
 import { usePoints } from '@/src/context/points';
 
-export default function HomeScreen() {
-  const { generateQuiz, ready } = useQuestion();
-  const { setTotalPoints } = usePoints()
-
-  const getQuize = async() => {
-    const response = await generateQuiz();
-    setTotalPoints((response).totalPoints);
-  }
-
-  useEffect(() => {
-    getQuize()
-  },[])
-
-  if(!ready){
-    return ( 
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <ActivityIndicator />
-      </ScrollView>
-    )
-  }
+export function Points() {
+  const { points, totalPoints } = usePoints();
 
   return (
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <Points />
-        <Quiz />
-      </ScrollView>
+    <View style={styles.quizContainer}>
+      <View style={styles.scoreContainer}>
+        <Text style={styles.text}>
+          Score: {points} / { totalPoints }
+        </Text>
+      </View>
+    </View>
   );
 }
 
