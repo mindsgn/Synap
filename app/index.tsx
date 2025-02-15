@@ -39,8 +39,6 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 10,
     borderRadius: 8,
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
     elevation: 3,
   },
   subjectText: {

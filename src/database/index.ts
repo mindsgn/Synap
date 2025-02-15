@@ -1,70 +1,17 @@
 import * as SQLite from 'expo-sqlite';
 
-// Open (or create) a SQLite database named 'content.db'
-const db = SQLite.openDatabase("content.db");
+export const getContentFromDB = async(subject: string): Promise<any> => {
+  const db = await SQLite.openDatabaseSync('content.db');
 
-/**
- * Initializes the database table if it doesn't exist.
- */
-export const initDB = () => {
-  db.transaction(tx => {
-    tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS content (subject TEXT PRIMARY KEY NOT NULL, keypoints TEXT);",
-      [],
-      () => console.log("Table created or already exists."),
-      (_, error) => {
-        console.error("Error creating table", error);
-        return false;
-      }
-    );
-  });
+  await db.execAsync(`
+    PRAGMA journal_mode = WAL;
+    CREATE TABLE IF NOT EXISTS course (id INTEGER PRIMARY KEY NOT NULL, subject TEXT NOT NULL, content TEXT NOT NULL, title TEXT NOT NULL, video TEXT NOT NULL);
+  `);
+
+  const firstRow = await db.getFirstAsync('SELECT * FROM content');
+  console.log(firstRow);
 };
 
-/**
- * Retrieve content for the given subject from the DB.
- * @param subject The subject to search for.
- */
-export const getContentFromDB = (subject: string): Promise<string | null> => {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        "SELECT keypoints FROM content WHERE subject = ?",
-        [subject],
-        (_, { rows }) => {
-          if (rows.length > 0) {
-            resolve(rows.item(0).keypoints);
-          } else {
-            resolve(null);
-          }
-        },
-        (_, error) => {
-          console.error("Error while selecting content from DB", error);
-          reject(error);
-          return false;
-        }
-      );
-    });
-  });
-};
-
-export const insertContentToDB = (
-  subject: string,
-  keypoints: string
-): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        "INSERT INTO content (subject, keypoints) VALUES (?, ?)",
-        [subject, keypoints],
-        (_, result) => {
-          resolve();
-        },
-        (_, error) => {
-          console.error("Error while inserting content into DB", error);
-          reject(error);
-          return false;
-        }
-      );
-    });
-  });
+export const insertContentToDB = async(): Promise<any> => {
+  return null;
 };

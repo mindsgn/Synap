@@ -10,12 +10,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="shorts"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
         name="quiz"
         options={{
           headerShown: false,

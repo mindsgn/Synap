@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { extractJsonData } from "@/src/hooks/extractJson";
 import subjects from "../constants/prompts";
-// import { getContentFromDB, insertContentToDB } from '@/src/database';
+import { getContentFromDB, insertContentToDB } from '@/src/database';
 
 type Question = {
   question: string;
@@ -152,31 +152,29 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
   },
   generateContent: async (subject: string = "" ) => {
     try {
-      const matchingSubject = subjects.find(item => item.subject === subject);
+      
+      const matchingSubject: any = subjects.find(item => item.subject === subject);
       const { roadmap } = matchingSubject;
       
-      roadmap.map(async(item) => {
+      roadmap.map(async(item: any) => {
         let keypoints = ""
         let concepts = []
 
         for (const topic of item.topics) {
           concepts = topic.concepts
           for (const concept of concepts) {
-
-            keypoints += concept + ", "
-
             //const storedKeypoints = await getContentFromDB(subject);
-            //console.log(storedKeypoints)
+            // console.log(storedKeypoints)
             
             //if (storedKeypoints) {
               // Content already exists, use it without regenerating.
-             // get().getContent(subject, storedKeypoints);
+            //  get().getContent(subject, storedKeypoints);
             //  return;
             //}
 
             //setTimeout(() => {
-            //  get().getContent(subject, keypoints)
-            //}, 100000) 
+            //  get().getContent(subject, concept)
+            //}, 100000)
           }
         }
       })
