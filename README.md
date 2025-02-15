@@ -68,8 +68,9 @@ This project is licensed under the MIT License.
 
 ## 📬 Contact
 This project is licensed under the MIT License.
+```
 📧 Email: sibongiseni@mindsgn.studio
-🌐 Website: recall.mindsgn.studio
-
+🌐 Website: https://recall.mindsgn.studio
+```
 
 

@@ -1,16 +1,19 @@
 {
   "expo": {
-    "name": "recall",
-    "slug": "recall",
-    "version": "1.0.0",
+    "name": "synap AI",
+    "slug": "synap-ai",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
-    "scheme": "recall",
+    "scheme": "synap",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "mindsgn.studio.recall"
+      "bundleIdentifier": "mindsgn.studio.synap",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -39,9 +42,13 @@
       "typedRoutes": true
     },
     "extra": {
+      "router": {
+        "origin": false
+      },
       "eas": {
-        "projectId": "ce2b01d3-abd2-4229-94fc-feb7c054ff81"
+        "projectId": "3e3934f7-d42a-4f46-8f9d-4df9861ed5a7"
       }
-    }
+    },
+    "owner": "mindsgn"
   }
 }

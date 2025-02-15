@@ -1,37 +1,43 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { extractJsonData } from '@/src/hooks/extractJson';
+import { extractJsonData } from "@/src/hooks/extractJson";
+import subjects from "../constants/prompts";
+// import { getContentFromDB, insertContentToDB } from '@/src/database';
 
 type Question = {
-    question: string;
-    options: string[];
-    correctAnswer: number;
-    explanation: string;
-    points: number,
-}
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation: string;
+  points: number;
+};
 
 type QuestionStore = {
-    ready: boolean;
-    error: null | { message: string };
-    questions: Question[];
-    setQuestion: (update: Question[]) => void;
-    setReady: (update: boolean) => void;
-    generateQuiz: () => Promise<{ totalPoints: number; }>
-}
+  ready: boolean;
+  error: null | { message: string };
+  questions: Question[];
+  content: any[],
+  setQuestion: (update: Question[]) => void;
+  setReady: (update: boolean) => void;
+  generateQuiz: () => Promise<{ totalPoints: number }>;
+  generateContent: (subject: string) => void;
+  getContent: (subject: string, content: string) => void;
+};
 
 export const useQuestion = create<QuestionStore>((set, get) => ({
   ready: false,
   questions: [],
+  content: [],
   points: 0,
   error: null,
-  generateQuiz: async() => {
-    try{
-      const difficulty = "medium"
-      const variation = false
+  generateQuiz: async () => {
+    try {
+      const difficulty = "medium";
+      const variation = false;
 
-      set({ready: false})
-      
-      const topic = "javascript"
+      set({ ready: false });
+
+      const topic = "javascript";
       const summary = `
         values:
           1. number
@@ -86,8 +92,10 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
 
         Type Conversion:
       `;
-      
-      const genAI = new GoogleGenerativeAI(`${process.env.EXPO_PUBLIC_GEMINI_API}`);
+
+      const genAI = new GoogleGenerativeAI(
+        `${process.env.EXPO_PUBLIC_GEMINI_API}`,
+      );
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
       const prompt = `
@@ -131,21 +139,84 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
       const result = await model.generateContent(prompt);
       const { response } = result;
       const jsonData = extractJsonData(response.text());
-      
+
       get().setQuestion(jsonData.questions);
       return {
-        totalPoints: jsonData.totalPoints
-      }
-    }catch(error){
+        totalPoints: jsonData.totalPoints,
+      };
+    } catch (error) {
       return {
-        totalPoints: 0
-      }
+        totalPoints: 0,
+      };
+    }
+  },
+  generateContent: async (subject: string = "" ) => {
+    try {
+      const matchingSubject = subjects.find(item => item.subject === subject);
+      const { roadmap } = matchingSubject;
+      
+      roadmap.map(async(item) => {
+        let keypoints = ""
+        let concepts = []
+
+        for (const topic of item.topics) {
+          concepts = topic.concepts
+          for (const concept of concepts) {
+
+            keypoints += concept + ", "
+
+            //const storedKeypoints = await getContentFromDB(subject);
+            //console.log(storedKeypoints)
+            
+            //if (storedKeypoints) {
+              // Content already exists, use it without regenerating.
+             // get().getContent(subject, storedKeypoints);
+            //  return;
+            //}
+
+            //setTimeout(() => {
+            //  get().getContent(subject, keypoints)
+            //}, 100000) 
+          }
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  getContent: async (subject: string = "", keypoints: string = "") => {
+    try {
+      const genAI = new GoogleGenerativeAI(
+        `${process.env.EXPO_PUBLIC_GEMINI_API}`,
+      );
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+      const prompt = `
+        Write an about the topic: "${subject}".
+        Make sure to include the following key points: ${keypoints}.
+
+         **Return the output in the following JSON format:**
+        \`\`\`json
+            {
+              "title": "title",
+              "example": "example of what is beaing taught",
+              "content": "content",
+              "summary": "summary of what is being taught",
+              "videoURL": "if possible a video url",
+            },
+         \`\`\`
+      `
+      const result = await model.generateContent(prompt);
+      const { response } = result;
+      console.log(response.text())
+    } catch (error) {
+      console.log(error)
     }
   },
   setQuestion: (update: Question[]) => {
     set({ questions: update, ready: true });
   },
   setReady: (update: boolean) => {
-    set({ready: update})
-  }
-}))
+    set({ ready: update });
+  },
+}));

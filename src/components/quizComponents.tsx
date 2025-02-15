@@ -1,7 +1,7 @@
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
-import { useState } from 'react';
-import { useQuestion } from '@/src/context/question';
-import { usePoints } from '@/src/context/points';
+import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import { useState } from "react";
+import { useQuestion } from "@/src/context/question";
+import { usePoints } from "@/src/context/points";
 
 export function Quiz() {
   const { questions, generateQuiz } = useQuestion();
@@ -21,7 +21,7 @@ export function Quiz() {
     if (selected === null) return;
     setSubmitted(true);
     if (selected === currentQuestionData.correctAnswer) {
-        setPoints(points);
+      setPoints(points);
     }
   };
 
@@ -34,13 +34,15 @@ export function Quiz() {
   if (currentQuestion >= questions.length) {
     return (
       <View style={styles.completionContainer}>
-        <Text style={[styles.title, { marginBottom: 16 }]}>Quiz Completed!</Text>
+        <Text style={[styles.title, { marginBottom: 16 }]}>
+          Quiz Completed!
+        </Text>
         <Text style={styles.text}>
           Your score is {points} out of {totalPoints}
         </Text>
         <TouchableOpacity
-          onPress={async() => {
-            const response = await generateQuiz()
+          onPress={async () => {
+            const response = await generateQuiz();
             setTotalPoints(response.totalPoints);
             setCurrentQuestion(0);
             setPoints(0);
@@ -60,16 +62,16 @@ export function Quiz() {
       <Text style={styles.subtitle}>Quiz</Text>
       <Text style={styles.question}>{currentQuestionData.question}</Text>
       {currentQuestionData.options.map((option, index) => {
-        let backgroundColor = '#fff';
+        let backgroundColor = "#fff";
         if (submitted) {
           // Highlight the correct answer green and selected wrong answer red.
           if (index === currentQuestionData.correctAnswer) {
-            backgroundColor = '#d4edda';
+            backgroundColor = "#d4edda";
           } else if (index === selected) {
-            backgroundColor = '#f8d7da';
+            backgroundColor = "#f8d7da";
           }
         } else if (index === selected) {
-          backgroundColor = '#cce5ff';
+          backgroundColor = "#cce5ff";
         }
         return (
           <TouchableOpacity
@@ -88,7 +90,7 @@ export function Quiz() {
           disabled={selected === null}
           style={[
             styles.button,
-            selected === null && { backgroundColor: '#aaa' }
+            selected === null && { backgroundColor: "#aaa" },
           ]}
         >
           <Text style={styles.buttonText}>Submit</Text>
@@ -96,14 +98,15 @@ export function Quiz() {
       ) : (
         <View style={styles.feedbackContainer}>
           {selected !== currentQuestionData.correctAnswer && (
-            <Text style={[styles.feedbackText, { color: 'red' }]}>
+            <Text style={[styles.feedbackText, { color: "red" }]}>
               Sorry, that's incorrect.
               {"\n"}
-              <Text style={{ fontWeight: 'bold' }}>Explanation:</Text> {currentQuestionData.explanation}
+              <Text style={{ fontWeight: "bold" }}>Explanation:</Text>{" "}
+              {currentQuestionData.explanation}
             </Text>
           )}
           {selected === currentQuestionData.correctAnswer && (
-            <Text style={[styles.feedbackText, { color: 'green' }]}>
+            <Text style={[styles.feedbackText, { color: "green" }]}>
               Correct!
             </Text>
           )}
@@ -118,92 +121,92 @@ export function Quiz() {
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 20,
     marginBottom: 20,
-    paddingHorizontal: 16
+    paddingHorizontal: 16,
   },
   stepContainer: {
     marginBottom: 16,
-    paddingHorizontal: 16
+    paddingHorizontal: 16,
   },
   reactLogo: {
     height: 178,
     width: 290,
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
-    left: 0
+    left: 0,
   },
   quizContainer: {
     padding: 16,
     marginHorizontal: 16,
     marginVertical: 12,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 8,
-    backgroundColor: '#fff'
+    backgroundColor: "#fff",
   },
   completionContainer: {
     padding: 16,
-    alignItems: 'center'
+    alignItems: "center",
   },
   scrollViewContainer: {
     paddingTop: 80,
-    paddingBottom: 32
+    paddingBottom: 32,
   },
   subtitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 12,
-    textAlign: 'center'
+    textAlign: "center",
   },
   question: {
     fontSize: 16,
     marginBottom: 12,
-    textAlign: 'center'
+    textAlign: "center",
   },
   optionButton: {
     padding: 12,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 4,
-    marginBottom: 8
+    marginBottom: 8,
   },
   optionText: {
-    fontSize: 16
+    fontSize: 16,
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: "#007bff",
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 4,
-    alignSelf: 'center',
-    marginVertical: 8
+    alignSelf: "center",
+    marginVertical: 8,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16
+    color: "#fff",
+    fontSize: 16,
   },
   feedbackContainer: {
     marginVertical: 12,
-    alignItems: 'center'
+    alignItems: "center",
   },
   feedbackText: {
     fontSize: 16,
     marginBottom: 8,
-    textAlign: 'center'
+    textAlign: "center",
   },
   scoreContainer: {
     marginTop: 12,
-    alignItems: 'center'
+    alignItems: "center",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
   text: {
     fontSize: 16,
-    textAlign: 'center'
-  }
+    textAlign: "center",
+  },
 });
