@@ -8,6 +8,8 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
+backend/build
+backend/build
 
 # Native
 *.orig.*
