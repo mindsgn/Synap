@@ -24,7 +24,7 @@ function Footer({}: FooterProp) {
         color="white"
         fontSize={21}
       >
-        &copy; {currentYear} CHAZA.XYZ
+        &copy; {currentYear} Synap
       </Text>
       <Box flexDir={'row'} display={['none', 'none', 'none', 'flex']}>
         <Text

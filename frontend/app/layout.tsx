@@ -5,8 +5,8 @@ import type { Metadata } from 'next';
 import { keywords } from '@/constants/keywords';
 
 export const metadata: Metadata = {
-  title: 'Chaza',
-  applicationName: 'Chaza',
+  title: 'Synap',
+  applicationName: 'Synap',
   authors: [
     {
       name: 'Sibongiseni',
@@ -17,12 +17,11 @@ export const metadata: Metadata = {
       url: 'https://mindsgn.studio'
     }
   ],
-  description:
-    'Simplify your legal documents! CHAZA lets you chat directly with contracts. Get answers, clarify terms, and understand legal jargon.',
+  description: "**Synap** is a mobile app designed to help users test their knowledge on topics they've learned. The app generates multiple-choice questions based on user input, reinforcing learning through active recall.",
   keywords,
   twitter: {
-    site: 'https://chaza.xyz',
-    title: 'Chaza.xyz'
+    site: 'https://synap.mindsgn.studio',
+    title: 'Synap'
   }
 };
 

@@ -34,7 +34,7 @@ function Header({}: HeaderProps) {
           color="white"
           cursor={'pointer'}
         >
-          CHAZA.XYZ
+          Synap
         </Heading>
       </Box>
     </Box>

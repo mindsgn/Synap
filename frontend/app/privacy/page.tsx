@@ -23,7 +23,7 @@ export default function PrivacyPolicy() {
       <Container maxW="container.md">
         <VStack spacing={6} align="stretch">
           <Heading as="h1" size="xl">
-            Privacy Policy for Chaza
+            Privacy Policy for Synap
           </Heading>
           
           <Text color="gray.400">
@@ -35,7 +35,7 @@ export default function PrivacyPolicy() {
               Introduction
             </Heading>
             <Text>
-              Welcome to Chaza, your personal legal assistant app. We take your privacy seriously and are committed to protecting your personal information.
+              Welcome to Synap, your personal legal assistant app. We take your privacy seriously and are committed to protecting your personal information.
             </Text>
           </Box>
 
@@ -102,7 +102,7 @@ export default function PrivacyPolicy() {
             <Text>
               If you have any questions about this Privacy Policy, please contact us at:{' '}
               <Text as="span" color="blue.400">
-                support@chaza.app
+                support@Synap.app
               </Text>
             </Text>
           </Box>

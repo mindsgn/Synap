@@ -1,6 +1,6 @@
-# 📚 Recall - Knowledge Testing App  
+# 📚 Synap - Knowledge Testing App  
 
-**Recall** is a mobile app designed to help users test their knowledge on topics they've learned. The app generates multiple-choice questions based on user input, reinforcing learning through active recall.
+**Synap** is a mobile app designed to help users test their knowledge on topics they've learned. The app generates multiple-choice questions based on user input, reinforcing learning through active recall.
 
 ## 🚀 Features  
 - 📌 **Custom Quiz Generation** – Automatically generate questions based on what you’ve learned.  
