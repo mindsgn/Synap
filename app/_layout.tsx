@@ -11,7 +11,10 @@ export default function RootLayout() {
         >
             <Stack>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
-                <Stack.Screen name="(course)" options={{ headerShown: false }} />
+                <Stack.Screen name="modal" options={{
+                    headerShown: false,
+                    presentation: "modal",
+                }} />
             </Stack>
       </RealmProvider>
     );

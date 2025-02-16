@@ -10,7 +10,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="quiz"
+        name="modal"
         options={{
           headerShown: false,
         }}

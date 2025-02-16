@@ -6,12 +6,11 @@ import { useEffect } from 'react';
 
 export default function SubjectDetailsScreen() {
   const { subject } = useLocalSearchParams() as { subject: string };
-  const { generateContent} = useQuestion()
-
+  const { getContent } = useQuestion()
 
   useEffect(() => {
-    generateContent(subject)
-  },[]) 
+    getContent(subject);
+  },[])
 
   return (
     <ScrollView style={styles.container}>

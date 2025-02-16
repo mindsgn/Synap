@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { extractJsonData } from "@/src/hooks/extractJson";
 import subjects from "../constants/prompts";
-import { getContentFromDB, insertContentToDB } from '@/src/database';
+import Realm, { BSON } from "realm";
 
 type Question = {
   question: string;
@@ -17,12 +17,22 @@ type QuestionStore = {
   error: null | { message: string };
   questions: Question[];
   content: any[],
+  realm: Realm | null;
   setQuestion: (update: Question[]) => void;
   setReady: (update: boolean) => void;
   generateQuiz: () => Promise<{ totalPoints: number }>;
-  generateContent: (subject: string) => void;
-  getContent: (subject: string, content: string) => void;
+  getContent: (subject: string) => void;
+  generatContent: (subject: string, content: string) => void;
+  downloadYoutube: (url: string) => void;
+  setRealm: (realm: Realm) => void;
+  getYoutube: (url: string) => void;
 };
+
+const genAI = new GoogleGenerativeAI(
+  `${process.env.EXPO_PUBLIC_GEMINI_API}`,
+);
+
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
 
 export const useQuestion = create<QuestionStore>((set, get) => ({
   ready: false,
@@ -30,6 +40,8 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
   content: [],
   points: 0,
   error: null,
+  realm: null,
+  setRealm: (realm: Realm) => set({ realm }),
   generateQuiz: async () => {
     try {
       const difficulty = "medium";
@@ -93,11 +105,6 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
         Type Conversion:
       `;
 
-      const genAI = new GoogleGenerativeAI(
-        `${process.env.EXPO_PUBLIC_GEMINI_API}`,
-      );
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
       const prompt = `
         I learned about "${topic}" today. 
 
@@ -150,31 +157,32 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
       };
     }
   },
-  generateContent: async (subject: string = "" ) => {
+  getContent: async (subject: string = "" ) => {
     try {
-      
+      const realm = get().realm;
+      if (!realm) throw new Error("Realm is not initialized");
+
       const matchingSubject: any = subjects.find(item => item.subject === subject);
       const { roadmap } = matchingSubject;
       
       roadmap.map(async(item: any) => {
-        let keypoints = ""
-        let concepts = []
+        // let keypoints = "";
+        let concepts = [];
 
         for (const topic of item.topics) {
           concepts = topic.concepts
           for (const concept of concepts) {
-            //const storedKeypoints = await getContentFromDB(subject);
-            // console.log(storedKeypoints)
+            // console.log(`${subject}:`, concept)
+            const assets = realm.objects<any>("Content").filtered("subject == $0", subject).toJSON();
+           
             
-            //if (storedKeypoints) {
-              // Content already exists, use it without regenerating.
-            //  get().getContent(subject, storedKeypoints);
-            //  return;
-            //}
+            if (assets.length !== 0) {
+              
+            }
 
-            //setTimeout(() => {
-            //  get().getContent(subject, concept)
-            //}, 100000)
+            setTimeout(() => {
+              get().generatContent(subject, concept)
+            }, 100000)
           }
         }
       })
@@ -182,13 +190,8 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
       console.log(error)
     }
   },
-  getContent: async (subject: string = "", keypoints: string = "") => {
+  generatContent: async (subject: string = "", keypoints: string = "") => {
     try {
-      const genAI = new GoogleGenerativeAI(
-        `${process.env.EXPO_PUBLIC_GEMINI_API}`,
-      );
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
       const prompt = `
         Write an about the topic: "${subject}".
         Make sure to include the following key points: ${keypoints}.
@@ -203,16 +206,54 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
               "videoURL": "if possible a video url",
             },
          \`\`\`
-      `
+      `;
+
       const result = await model.generateContent(prompt);
       const { response } = result;
-      console.log(response.text())
+      console.log(response.text());
     } catch (error) {
       console.log(error)
     }
   },
   setQuestion: (update: Question[]) => {
     set({ questions: update, ready: true });
+  },
+  downloadYoutube: (url: string) => {},
+  getYoutube: async(url: string) => {
+    try{
+      npm install react-native-ytdl
+
+      const prompt = `
+        ** Instructions ** 
+        1. **search: "${url}"**, do not return random video data, 
+        2. divide it into multiple sections of exactly 30 minutes each. 
+        3. Ignore any remaining time that is less than 30 minutes. 
+        4. Return the result only in JSON format as follows: 
+        \`\`\`json
+        {
+          video: [
+            { 
+              start: 'HH:MM:SS', 
+              end: 'HH:MM:SS' 
+            }, 
+            ...
+          ],
+          fullLength: "HH:MM:SS",
+          url: "youtube url link"
+          sumarry: "video summary"
+        }.
+        \`\`\`
+        Assume timestamps are in  format.
+      `;
+
+      const result = await model.generateContent(prompt);
+      const { response } = result;
+      const videoData = extractJsonData(response.text());
+      console.log(videoData)
+
+    }catch(error){
+      console.log(error)
+    }
   },
   setReady: (update: boolean) => {
     set({ ready: update });
