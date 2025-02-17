@@ -5,7 +5,9 @@ mongoose.Promise = global.Promise;
 dotenv.config();
 
 const connectToDatabase = async (): Promise<void> => {
-  const options: ConnectOptions = { };
+  const options: ConnectOptions = {
+    dbName: "synap",
+   };
   await mongoose.connect(`${process.env.MONGO_DB_URL}`, options);
 };
 
