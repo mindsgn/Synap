@@ -40,6 +40,10 @@ function secondsToHHMMSS(seconds: number): string {
   return [h, m, s].map((v) => v.toString().padStart(2, '0')).join(':');
 }
 
+function parseVideo () {
+  
+}
+
 app.post('/upload', async (req: Request, res: Response) => {
   try {
     const { url } = req.query;
@@ -133,7 +137,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, async () => {
-  cron.schedule('* 1 * * *', () => {
+  cron.schedule('* * * * *', () => {
     console.log('running a task every minute');
   });
 
