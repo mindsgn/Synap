@@ -8,6 +8,8 @@ import * as fs from "fs";
 import { GoogleAIFileManager } from "@google/generative-ai/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import cron from "node-cron";
+import { connectToDatabase } from "./database"
+import UploadSchema from './schema/upload.schema';
 
 const ytdl = require('ytdl-core');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path
@@ -41,15 +43,20 @@ function secondsToHHMMSS(seconds: number): string {
 }
 
 function parseVideo () {
-  
 }
 
 app.post('/upload', async (req: Request, res: Response) => {
   try {
     const { url } = req.query;
+    
     if (!url || typeof url !== 'string') {
       throw new Error('Missing or invalid URL');
     }
+
+    const Uploads = await UploadSchema.find();
+    console.log(Uploads)
+
+    /*
     // Get video id and video info from ytdl
     const id = ytdl.getURLVideoID(url);
     const data = await ytdl.getInfo(id);
@@ -88,7 +95,6 @@ app.post('/upload', async (req: Request, res: Response) => {
   
     for (const segment of segments) {
       const startTime = secondsToHHMMSS(segment.start);
-      console.log(startTime);
       
       // Note: fluent-ffmpeg accepts duration in seconds.
       const part = uuidv4(); 
@@ -120,8 +126,9 @@ app.post('/upload', async (req: Request, res: Response) => {
     fs.rm(inputPath, () => {
       console.log(`deleted file: ${inputPath}`)
     });
+    */
 
-    return res.status(201).json({ videoSegments: segments });
+    return res.status(201).json({ });
   } catch (error) {
     console.error(error);
     return res.status(422).json({ error: true, message: error });
@@ -137,6 +144,8 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, async () => {
+  await connectToDatabase();
+
   cron.schedule('* * * * *', () => {
     console.log('running a task every minute');
   });
