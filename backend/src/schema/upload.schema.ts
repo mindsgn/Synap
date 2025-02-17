@@ -23,13 +23,11 @@ export const authSchema = new Schema<any>(
         },
         link: {
             type: String, 
-            required: true, 
-            unique: true 
+            required: false, 
+            unique: false
         },
         sections: {
-            type: String, 
-            required: true, 
-            unique: true 
+            type: [String], 
         },
         status: {
             type: String,

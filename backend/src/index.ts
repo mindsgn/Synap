@@ -53,10 +53,18 @@ app.post('/upload', async (req: Request, res: Response) => {
       throw new Error('Missing or invalid URL');
     }
 
-    const Uploads = await UploadSchema.find();
-    console.log(Uploads)
+    const newUpload = new UploadSchema({
+      youtube:  url,
+      status: "processing",
+    })
 
+    const newEntry =  newUpload.save();
+
+    console.log(newEntry);
+    
     /*
+    
+    const Uploads = await UploadSchema.find();
     // Get video id and video info from ytdl
     const id = ytdl.getURLVideoID(url);
     const data = await ytdl.getInfo(id);
@@ -71,7 +79,7 @@ app.post('/upload', async (req: Request, res: Response) => {
       writeStream.on('finish', resolve);
       writeStream.on('error', reject);
     });
-
+    
     // Get the total duration of the video (in seconds).
     const totalDuration = parseInt(data.videoDetails.lengthSeconds, 10);
     const segments: Array<{ start: number; duration: number }> = [];
