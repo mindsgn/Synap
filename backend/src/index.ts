@@ -7,6 +7,8 @@ import { Response } from 'express';
 import * as fs from "fs";
 import { GoogleAIFileManager } from "@google/generative-ai/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import cron from "node-cron";
+
 const ytdl = require('ytdl-core');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path
 const ffmpeg = require('fluent-ffmpeg')
@@ -131,6 +133,10 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, async () => {
+  cron.schedule('* 1 * * *', () => {
+    console.log('running a task every minute');
+  });
+
   console.log(`Application started on URL ${HOST}:${PORT} 🎉`);
 });
  
