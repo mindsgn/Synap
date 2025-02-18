@@ -1,12 +1,8 @@
 import express, { Request } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import { Response } from 'express';
-import * as fs from "fs";
-import { GoogleAIFileManager, FileState } from "@google/generative-ai/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import cron from "node-cron";
 import { connectToDatabase } from "./database";
 import UploadSchema from './schema/upload.schema'
@@ -51,6 +47,21 @@ app.post('/upload', async (req: Request, res: Response) => {
   }
 });
 
+app.get('/upload', async(req, res) => {
+  try{
+    const { id } = req.query
+    const response = await UploadSchema.findOne({_id: id});
+
+    return res.status(200).send({
+      status: response?.status,
+      youtube: response?.youtube,
+      segments: response?.segments,
+    });
+  }catch(error){
+    return res.status(422).send();
+  }
+});
+
 app.get('/', (req, res) => {
   try{
     return res.status(200).send();
@@ -63,7 +74,9 @@ app.listen(PORT, async () => {
   await connectToDatabase();
 
   cron.schedule('* * * * *', async() => {
-    await processVideo()
+    if(process.env.ENV==="dev"){
+      await processVideo()
+    }
   });
 
   console.log(`Application started on URL ${HOST}:${PORT} 🎉`);
