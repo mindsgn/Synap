@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import * as fs from "fs";
 import { v4 as uuidv4 } from 'uuid';
 import { extractJsonData } from "./extractJSON";
+import path from 'path';
+import { getCookieString } from "./getCookie";
 
 const ytdl = require('ytdl-core');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path
@@ -21,6 +23,8 @@ const model = genAI.getGenerativeModel({
     model: "gemini-2.0-flash",
 });
 
+const cookieFilePath = path.join(__dirname, 'cookie.txt');
+
 function secondsToHHMMSS(seconds: number): string {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
@@ -30,6 +34,7 @@ function secondsToHHMMSS(seconds: number): string {
 
 async function processVideo () {
     try{
+        const cookieString = await getCookieString(cookieFilePath);
       const upload = await UploadSchema.findOneAndUpdate(
         { status: "unprocessed" },
         { $set: { status: "processing" } },
@@ -47,7 +52,13 @@ async function processVideo () {
       const inputPath = `../downloads/${uuid}.mp4`;
     
       await new Promise<void>((resolve, reject) => {
-        const stream = ytdl(youtube);
+        const stream = ytdl(youtube, {
+            requestOptions: {
+              headers: {
+                Cookie: cookieString
+              }
+            }
+          });
         const writeStream = fs.createWriteStream(inputPath);
         stream.pipe(writeStream);
         writeStream.on('finish', resolve);
