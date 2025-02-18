@@ -43,13 +43,9 @@ app.post('/upload', async (req: Request, res: Response) => {
     })
 
     const newEntry = await newUpload.save();
-    const {_id, status, youtube} = newEntry
+    const {_id, status, youtube} = newEntry;
 
-    const { videoDetails } = data
-    const {title, category, publishDate, author,  thumbnail: videoThumbnail} = videoDetails
-    const { name,  thumbnails: authorThumbnail } = author;
-
-    return res.status(201).json({ _id, status, youtube, title, category, publishDate, authorName: name, authorThumbnail, videoThumbnail });
+    return res.status(201).json({ _id, status, youtube });
 
   } catch (error) {
     console.error(error);
@@ -84,7 +80,7 @@ app.listen(PORT, async () => {
   await connectToDatabase();
 
   cron.schedule('* * * * *', async() => {
-    if(process.env.ENV==="dev"){
+    if(process.env.ENV === "dev"){
       await processVideo()
     }
   });

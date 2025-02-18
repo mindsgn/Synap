@@ -65,8 +65,7 @@ async function processVideo () {
         writeStream.on('finish', resolve);
         writeStream.on('error', reject);
       });
-    
-    
+  
       const totalDuration = parseInt(data.videoDetails.lengthSeconds, 10);
       const segments: Array<{ start: number; duration: number }> = [];
     
@@ -166,7 +165,9 @@ async function processVideo () {
               ]);
   
               const { response } = result;
-              console.log(response.text());
+              // const { videoDetails } = data
+              // const { title, category, publishDate, author,  thumbnail: videoThumbnail} = videoDetails
+              // const { name,  thumbnails: authorThumbnail } = author;
 
               const data = extractJsonData(response.text());
               
