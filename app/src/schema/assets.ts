@@ -1,23 +1,27 @@
 import Realm, { BSON } from "realm";
 
-class Content extends Realm.Object<any> {
+interface CoursesInterface {
+  _id: BSON.ObjectID
+  title: string;
+  youtube: string;
+}
+
+class Courses extends Realm.Object<CoursesInterface> {
   //@ts-expect-error
   _id: BSON.ObjectId;
-  //@ts-expect-error
+   //@ts-expect-error
   title: string;
-  //@ts-expect-error
-  content: string;
-  //@ts-expect-error
+   //@ts-expect-error
   youtube: string;
   createdAt!: Date;
   updatedAt!: Date;
 
   static schema = {
-    name: "Content",
+    name: "Courses",
     primaryKey: "_id",
     properties: {
       _id: "objectId",
-      content: "string",
+      title: "string",
       youtube: "string",
       createdAt: "date",
       updatedAt: "date",
@@ -25,6 +29,6 @@ class Content extends Realm.Object<any> {
   };
 }
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 3;
 
-export { Content, SCHEMA_VERSION };
+export { Courses, SCHEMA_VERSION };

@@ -221,34 +221,25 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
   downloadYoutube: (url: string) => {},
   getYoutube: async(url: string) => {
     try{
-      const prompt = `
-        ** Instructions ** 
-        1. **search: "${url}"**, do not return random video data, 
-        2. divide it into multiple sections of exactly 30 minutes each. 
-        3. Ignore any remaining time that is less than 30 minutes. 
-        4. Return the result only in JSON format as follows: 
-        \`\`\`json
-        {
-          video: [
-            { 
-              start: 'HH:MM:SS', 
-              end: 'HH:MM:SS' 
-            }, 
-            ...
-          ],
-          fullLength: "HH:MM:SS",
-          url: "youtube url link"
-          sumarry: "video summary"
-        }.
-        \`\`\`
-        Assume timestamps are in  format.
-      `;
+      const realm = get().realm;
+      if (!realm) throw new Error("Realm is not initialized");
 
-      const result = await model.generateContent(prompt);
-      const { response } = result;
-      const videoData = extractJsonData(response.text());
-      console.log(videoData)
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API}/upload?url=${url}`, {
+        method: "POST"
+      })
 
+      const data = await response.json()
+      console.log(data)
+
+      /*
+      realm.write(() => {
+        realm.create('Courses', {
+          _id: new BSON.ObjectID, 
+          title: "", 
+          youtube: "",
+        });
+      });
+      */
     }catch(error){
       console.log(error)
     }

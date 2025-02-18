@@ -1,12 +1,12 @@
 import { Stack } from "expo-router";
 import "react-native-reanimated";
-import { SCHEMA_VERSION, Content } from "@/src/schema/assets";
+import { SCHEMA_VERSION, Courses } from "@/src/schema/assets";
 import { RealmProvider } from "@realm/react";
 
 export default function RootLayout() {
     return (
         <RealmProvider
-            schema={[Content]}
+            schema={[Courses]}
             schemaVersion={SCHEMA_VERSION}
         >
             <Stack>

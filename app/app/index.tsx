@@ -27,7 +27,13 @@ export default function HomeScreen() {
           alignItems: "center",
         }}>
         <Text style={styles.title}>Available Subjects</Text>
-        <View>
+        <View style={{
+            flex: 1, 
+            display: 'flex', 
+            justifyContent:  "center", 
+            alignItems: "center",
+          }}
+        >
           {subjects.map((subject, index) => (
             <View key={index} style={styles.subjectCard}>
               <Link href={{
