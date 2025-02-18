@@ -44,7 +44,7 @@ async function processVideo () {
       const id = ytdl.getURLVideoID(youtube);
       const data = await ytdl.getInfo(id);
       const uuid = uuidv4();
-      const inputPath = `../../downloads/${uuid}.mp4`;
+      const inputPath = `../downloads/${uuid}.mp4`;
     
       await new Promise<void>((resolve, reject) => {
         const stream = ytdl(youtube);
@@ -77,14 +77,15 @@ async function processVideo () {
         
         // Note: fluent-ffmpeg accepts duration in seconds.
         const part = uuidv4(); 
-        const outputFile = `../../downloads/${uuid}_${part}.mp4`;
+        const outputFile = `../downloads/${uuid}_${part}.mp4`;
     
-        await new Promise<void>((resolve, reject) => {
+        await new Promise<void>((resolve, reject) => {     
           ffmpeg(inputPath)
             .setStartTime(startTime)
             .setDuration(segment.duration)
             .output(outputFile)
             .on('end', async() => {
+            try{
               const uploadResponse = await fileManager.uploadFile(outputFile, {
                 mimeType: "video/mp4",
                 displayName: `${uuid}_${part}`,
@@ -147,12 +148,14 @@ async function processVideo () {
                         "totalPoints": "number of total points to be allocated"
                       }
                       \`\`\`
-                      Ensure the question is relevant to the summary provided.
+                     
                 `
                 },
               ]);
   
               const { response } = result;
+              console.log(response.text());
+
               const data = extractJsonData(response.text());
               
               await UploadSchema.findOneAndUpdate(
@@ -171,12 +174,17 @@ async function processVideo () {
                 },
                 { upsert: true, new: true }
               );
-  
+              
               await fileManager.deleteFile(uploadResponse.file.name);
   
               fs.rm(outputFile, () => {
                 console.log(`deleted file: ${outputFile}`)
-              })
+              });
+
+              resolve();
+            }catch(err){
+                reject(err);
+            }
             })
             .on('error', reject)
             .run();

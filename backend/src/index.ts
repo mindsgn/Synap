@@ -1,11 +1,15 @@
 import express, { Request } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import { Response } from 'express';
+import * as fs from "fs";
+import { GoogleAIFileManager, FileState } from "@google/generative-ai/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import cron from "node-cron";
 import { connectToDatabase } from "./database";
-import UploadSchema from './schema/upload.schema';
+import UploadSchema from './schema/upload.schema'
 import { processVideo } from './utils/processVideo';
 
 dotenv.config();
