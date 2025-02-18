@@ -23,7 +23,8 @@ const model = genAI.getGenerativeModel({
     model: "gemini-2.0-flash",
 });
 
-const cookieFilePath = path.join(__dirname, 'cookie.txt');
+const cookieFilePath = path.join(__dirname, '../../cookie.txt');
+console.log(cookieFilePath)
 
 function secondsToHHMMSS(seconds: number): string {
     const h = Math.floor(seconds / 3600);
