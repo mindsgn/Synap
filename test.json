@@ -1,0 +1,128 @@
+{
+    "title": "One-Way Video Interview Knowledge Test",
+    "transcription": "Over the past two decades, one-way video interviews, in which applicants record themselves answering questions into their webcams while a little timer ticks down, have become commonplace in the self-hoarding humiliation ritual we all know as applying for jobs. The biggest proponents of one-way video interviews say they're necessary for handling a high volume of job applications and eliminate human bias from the hiring process. However, these interviews have a horde of detractors claiming that these programs not only feel dystopian and inhumane, but they also serve up a veritable feast of ethical conundrums that may very well override their practical benefits. Ladies and gentlemen, this is a murky case. But I am going to solve it until it's cold, dead and buried. Let's get you up, partner. One-way video interviews were birthed as a way for companies to handle an outsized number of job applications after the internet made applying to jobs as easy as store-bought pie, a famously easy type of pie. Today, job applications are now growing four times faster than actual job openings, and to meet this demand, big corporations use automated interview programs from third-party companies like HireVue, whose name is pretty much synonymous with these types of interviews. And while Capital B business might be jazzed about automated interviewing, the folks on the other side don't seem particularly gung or ho. The dreaded one-way video interview. Just so bad. I'm fucking low. Watch me forget how to speak during a self-recorded interview. And we were able to success successfully do that. Not many job seekers I've spoken to have been excited about this. They feel like this kind of impersonal, right? Like they've been asked these questions sitting by themselves. They don't really know what to do. Am I supposed to like look in the camera? What am I supposed to do? How are they judging me? You're put into the software environment where you see yourself on a screen, and a timer and a question. I worked as a campus recruiter for investment banking, like the first round for a lot of candidates would be the high review portion. I've never met any person that actually likes the high review recruiting process. Now, before you grab your pitchfork and pierce it through that max screen, not everybody is as down on one way interviews. Some people do seem to enjoy the flexibility they provide, while others praise the accessibility they afford candidates. But to be honest with you, I didn't feel like calling all these people and scheduling all those one-on-one calls was a particularly good use of my time. The process started to feel all tedious and inefficient. So I did what it feels like all of my favorite corporate juggernauts do. I got a team of smelly coders to build a one way video interview program, and I conducted an asynchronous round of interviews that way. Hello, insert name here. I think I got trained. So, pretty bad in the past, to be honest. So with one way interviews, I end up just talking to a black screen, like I'm doing right now and looking into the dark abyss of the camera. No one really enjoys doing these one way interviews. There's nobody to give you any kind of feedback. Talking to no one on the other side feels a bit weird. Sometimes I feel like I have too much time to speak, and I don't know how to fill the empty space. I've had some hire interviews that honestly seemed like a way to just validate that I was a human as opposed to a robot.  Now Lindsey stressed that a common misconception about higher view revolves around artificial intelligence. According to her, right now only 20 to 30% of high reviews customers use AI to score and rank interviews, though she does think that more companies are getting more comfortable with that idea. You can just talk to yourself the day before or the morning off. I used to record myself with my phone. So if you can find a nice dark wall and you can just tape up common questions about yourself that you can anticipate, they'll ask. Dr. Lindsey Zuloaga is a data scientist with a background in applied physics in AI ethics. For the past eight years, she's also been the chief data scientist at HireVue, the very company that is one of the most popular third party providers of one way video interviews. Cathy O'Neil is a mathematician data scientist and author. She founded a consulting firm through which she audits algorithms to make sure they're not evil. She also plays bluegrass music, which is fun. I think the messaging has gone a lot better since then because I was very confused about what was going on. And this could have been the company, not necessarily hire you because our customers have a lot of their own custom messaging. Our customers, they do end up getting more diverse candidates. They need a sorting method, and so the question is, is that sorting method is just going to be something that nobody ever looks into, or are we going to be measuring its basic fairness. They need a sorting method. They're not investing in this. They're taking this very hands off approach to say that oh, you know, we'll just contract some companies and they'll figure this out for us. There are no federal laws requiring disclosure on the part of companies who are using these AI technologies. Therefore applicants are not able to even to opt out, or even get any sort of transparency or accountability in terms of what these AI technologies are doing. Sure thing Dr. Z, but as a hire view hire up, I had to put her in the hot seat and ask her to justify to my audience of rapid 20 somethings, why hire views one way video anti's are beneficial. Efficiency and fairness. We use AI to evaluate people's answers to interview questions and rank them for our customers. So our customers have tons and tons of applicants. I've since abandoned incorporating AI facial analysis into its tools. It's worth adding that Dr. Zuloaga told us that focusing on languages more equitable anyway. To me what seems unfair is not know we have been a valued because how it performs like how accurate how predictive it. The the model and what are the decisions being made. So this is often people's first exposure to the hiring process. Every time you're being evaluated, you kind of give up a part of yourself. And when it's put through software, it becomes increasingly dehumanizing. But folks, even a future is terminator coded as this isn't going to stop my money hungry Gen Z hounds from applying to entry level banking jobs. And there's even a litany of terrifying guides online that can prep you for giving your best virtual pitch. Meanwhile, others are even using AI themselves to come up with answers to the questions video interviews pose. It's AI on AI people. It! What? This is off the charts. We have no federal oversight. All you have to know is that the thing is very likely to be biased and discriminatory. Just just don't accept that that algorithm is being more objective. In the meantime, if you're out there in the trenches of internship or job interviews, my best advice is to do what I do. Dress impeccably. Stare down the barrel of the camera. Try to sound smart and don't say f*ck. Follow these steps, friends, and let the algo do the rest. For good work, I'm Dan Toomey. Thanks for watching and we'll be in touch.",
+    "summary": "This video discusses the use of AI in one-way video interviews for job applications. The narrator explains that while proponents of these interviews claim they are efficient and reduce bias, many detractors find them dehumanizing and unethical. The video examines concerns about lack of transparency and regulation in AI hiring technology, and how AI can exacerbate bias if not implemented carefully. The presenter advises job seekers to be professional and present themselves well, while also acknowledgeing that the system might be flawed.",
+    "questions": [
+      {
+        "question": "According to a data scientist from HireVue, what percentage of their customers use AI to score and rank interviews?",
+        "options": [
+          "20-30%",
+          "40-50%",
+          "60-70%",
+          "80-90%"
+        ],
+        "correctAnswer": 0,
+        "explanation": "The video states that, according to a data scientist, Dr. Lindsey Zuloaga, from HireVue, 20-30% of their customers use AI to score and rank interviews.",
+        "points": 2
+      },
+     {
+        "question": "What is one of the reasons some people do not like one-way video interviews?",
+        "options": [
+          "They are too long",
+          "They feel the interview is not personal",
+          "They dislike the background noise",
+          "They do not have good internet"
+        ],
+        "correctAnswer": 1,
+        "explanation": "The video discussed that some job seekers said that one-way video interviews felt impersonal and you do not know who to look at while talking.",
+        "points": 1
+      },
+      {
+        "question": "What was one negative aspect of AI as it pertains to hiring algorithms?",
+        "options": [
+          "It can exacerbate bias.",
+          "It can be too accurate.",
+          "It can be manipulated by candidates.",
+          "It is hard to setup."
+        ],
+        "correctAnswer": 0,
+        "explanation": "The video discusses how AI can exacerbate bias due to lack of data science and how some things may get overlooked.",
+        "points": 3
+      },
+      {
+        "question": "Which government organization is mentioned as having removed AI hiring guidelines from its website?",
+        "options": [
+          "Federal Trade Commission (FTC)",
+          "Equal Employment Opportunity Commission (EEOC)",
+          "Department of Labor (DOL)",
+          "Department of Justice (DOJ)"
+        ],
+        "correctAnswer": 1,
+        "explanation": "It's mentioned that the EEOC (Equal Employment Opportunity Commission) used to publish guidelines for AI hiring but removed them from the website during the Trump administration.",
+        "points": 3
+      },
+      {
+        "question": "What is considered a positive aspect of the use of video AI interviews?",
+        "options": [
+          "Greater accessabilty.",
+          "It eliminates human-to-human interaction",
+          "It is easier to lie",
+          "None of these are correct"
+        ],
+        "correctAnswer": 0,
+        "explanation": "One of the reasons that video AI interviews is that it provides a greater ability for candidates to do so.",
+        "points": 1
+      },
+      {
+        "question": "Who stated the following: I tell myself to take a deep breath, and just smile and let it go'?",
+        "options": [
+          "Hilke Schellman.",
+          "Janice Tjan",
+          "Ifeoma Ajunwa.",
+          "None of the above."
+        ],
+        "correctAnswer": 3,
+        "explanation": "The video mentions that Janice Tjan is the one that states that.",
+        "points": 4
+      },
+      {
+        "question": "According to the video, what is a recommendation to ace a video interview from the presenter?",
+        "options": [
+          "Try to sound smart, don't say f*ck, look in camera, dress impeccably",
+          "It does not really matter.",
+          "Don't look at the camera, don't swear and come unprepared",
+          "There are no tips."
+        ],
+        "correctAnswer": 0,
+        "explanation": "The presenter recommends the viewer look into the camera, dress impeccably, try to sound smart and don't swear to better you're chances.",
+        "points": 2
+      },
+      {
+        "question": "To avoid using biased data in hiring practices it is recommended to do the following?",
+        "options": [
+          "Review algorithms that check for biases.",
+          "Hire an auditing group to check for biases.",
+          "Collect diverse data to evaluate biases.",
+          "All of these are correct.",
+        ],
+        "correctAnswer": 3,
+        "explanation": "Several steps were discussed to avoid biases within a system, they include: Hire an auditing group to review, collect diverse data to evaluate, review algorithms to check for bias.",
+        "points": 3
+      },
+      {
+        "question": "Which company in the video was mentioned as being synonymous with one-way video interviewing programs?",
+        "options": [
+          "HireVue",
+          "Indeed",
+          "Glassdoor",
+          "LinkedIn"
+        ],
+        "correctAnswer": 0,
+        "explanation": "The video stated that third-party companies such as HireVue, were synonymous with one-way video interviewing programs.",
+        "points": 2
+      },
+      {
+        "question": "The word 'A.I or A.I Boning robots is a title that is used for?",
+        "options": [
+          "a documentary about AI interviewing",
+          "a book",
+          "a meme",
+          "a new software",
+        ],
+        "correctAnswer": 1,
+        "explanation": "The video displays that a book with the title 'A.I or A.I Boning robots' is shown.",
+        "points": 4
+      }
+    ],
+    "totalPoints": 24
+}

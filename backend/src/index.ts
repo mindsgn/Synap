@@ -34,9 +34,6 @@ app.post('/upload', async (req: Request, res: Response) => {
       throw new Error('Missing or invalid URL');
     }
 
-    const id = ytdl.getURLVideoID(url);
-    const data = await ytdl.getInfo(id);
-
     const newUpload = new UploadSchema({
       youtube:  url,
       status: "unprocessed",
