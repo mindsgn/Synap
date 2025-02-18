@@ -15,6 +15,8 @@ export interface QuestionInterface {
 // Define the Segment interface
 export interface SegmentsInterface {
     title: string;
+    authorName: string;
+    category: string;
     transcription: string;
     summary: string;
     questions: QuestionInterface[];
@@ -54,6 +56,8 @@ const segmentSchema = new Schema<SegmentsInterface>(
     startTime: { type: Number, required: false },
     endTime: { type: Number, required: false },
     title: { type: String, required: false },
+    authorName: { type: String, required: false },
+    category: { type: String, required: false },
     transcription: { type: String, required: false },
     summary: { type: String, required: false },
     questions: { type: [questionSchema], default: [] },

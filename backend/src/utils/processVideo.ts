@@ -48,7 +48,7 @@ async function processVideo () {
       if(youtube === "") return;
     
       const id = ytdl.getURLVideoID(youtube);
-      const data = await ytdl.getInfo(id);
+      const youtubeData = await ytdl.getInfo(id);
       const uuid = uuidv4();
       const inputPath = `../downloads/${uuid}.mp4`;
     
@@ -66,7 +66,7 @@ async function processVideo () {
         writeStream.on('error', reject);
       });
   
-      const totalDuration = parseInt(data.videoDetails.lengthSeconds, 10);
+      const totalDuration = parseInt(youtubeData.videoDetails.lengthSeconds, 10);
       const segments: Array<{ start: number; duration: number }> = [];
     
       if (totalDuration > THIRTY_MINUTES) {
@@ -141,6 +141,7 @@ async function processVideo () {
                         "title": "provide title",
                         "transcription": "transcribe the video",
                         "summary": "provide summary",
+                        "image": "a random image link that fits the title",
                         "questions":[
                           {
                             "question": "Generated question here",
@@ -165,9 +166,9 @@ async function processVideo () {
               ]);
   
               const { response } = result;
-              // const { videoDetails } = data
-              // const { title, category, publishDate, author,  thumbnail: videoThumbnail} = videoDetails
-              // const { name,  thumbnails: authorThumbnail } = author;
+              const { videoDetails } = youtubeData
+              const { title, category, author,  /*thumbnail: videoThumbnail */} = videoDetails
+              const { name: authorName,  /*thumbnails: authorThumbnail */} = author;
 
               const data = extractJsonData(response.text());
               
@@ -176,7 +177,9 @@ async function processVideo () {
                 {
                   $push: {
                     segments: {
-                      title: data.title,
+                      title,
+                      authorName,
+                      category,
                       transcription: data.transcription,
                       summary: data.summary,
                       questions: data.questions,
