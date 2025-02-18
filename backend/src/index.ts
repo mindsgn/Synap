@@ -8,6 +8,8 @@ import { connectToDatabase } from "./database";
 import UploadSchema from './schema/upload.schema'
 import { processVideo } from './utils/processVideo';
 
+const ytdl = require('ytdl-core');
+
 dotenv.config();
 
 const HOST = process.env.HOST || 'http://localhost';
@@ -32,15 +34,23 @@ app.post('/upload', async (req: Request, res: Response) => {
       throw new Error('Missing or invalid URL');
     }
 
+    const id = ytdl.getURLVideoID(url);
+    const data = await ytdl.getInfo(id);
+
     const newUpload = new UploadSchema({
       youtube:  url,
       status: "unprocessed",
     })
 
     const newEntry = await newUpload.save();
+    const {_id, status, youtube} = newEntry
 
+    const { videoDetails } = data
+    const {title, category, publishDate, author,  thumbnail: videoThumbnail} = videoDetails
+    const { name,  thumbnails: authorThumbnail } = author;
 
-    return res.status(201).json({ newEntry });
+    return res.status(201).json({ _id, status, youtube, title, category, publishDate, authorName: name, authorThumbnail, videoThumbnail });
+
   } catch (error) {
     console.error(error);
     return res.status(422).json({ error: true, message: error });
