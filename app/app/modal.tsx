@@ -19,6 +19,7 @@ import * as FileSystem from "expo-file-system";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { useQuestion } from "@/src/context/question";
+import { useSQLiteContext } from "expo-sqlite";
 
 interface Form {
   name: string;
@@ -34,7 +35,8 @@ interface Form {
 }
 
 export default function Modal() {
-  const { getYoutube } = useQuestion();
+  const db = useSQLiteContext();
+  const { getYoutube, setCourses } = useQuestion();
   const [isEnabled, setIsEnabled] = useState(false);
   const [location, setLocation] = useState(null);
   const [responseimage, setResponse] = useState<string>("message:");
@@ -53,7 +55,6 @@ export default function Modal() {
     owner: "DEBUG",
   });
 
-  // New state for YouTube link input
   const [youtubeLink, setYoutubeLink] = useState<string>("");
   const [youtubeError, setYoutubeError] = useState<string>("");
 
@@ -61,25 +62,6 @@ export default function Modal() {
   const validateYoutubeLink = (link: string): boolean => {
     const regex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/).+$/;
     return regex.test(link);
-  };
-
-  const extractJsonData = (text: string) => {
-    const startIndex = text.indexOf("{");
-    const endIndex = text.lastIndexOf("}");
-    if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
-      const jsonString = text.substring(startIndex, endIndex + 1);
-      try {
-        const jsonData = JSON.parse(jsonString);
-        return jsonData;
-      } catch (error) {
-        console.error("Error parsing JSON:", error);
-        return null;
-      }
-    } else {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      console.error("Valid JSON structure not found in the string");
-      return null;
-    }
   };
 
   const handleSubmit = async () => {
@@ -90,7 +72,21 @@ export default function Modal() {
       return;
     }
 
-    await getYoutube(youtubeLink);
+    const response = await getYoutube(youtubeLink);
+    
+    if(!response) {
+      router.dismiss()
+      setProcessing(false);
+    };
+
+    const {_id: uuid, status, youtube} = response;
+
+    const statement = await db.prepareAsync('INSERT INTO Courses (uuid, youtube, status) VALUES (?,?,?)');
+    await statement.executeAsync([uuid, youtube, status]);
+
+    const allRows = await db.getAllAsync('SELECT * FROM courses');
+    setCourses(allRows)
+
     router.dismiss()
     setProcessing(false);
   };
@@ -104,9 +100,6 @@ export default function Modal() {
   useEffect(() => {
     (async () => {
       if (!isEnabled) return null;
-      try {
-        // Your async operations here.
-      } catch (error) {}
     })();
   }, [isEnabled]);
 

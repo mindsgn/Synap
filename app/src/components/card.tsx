@@ -8,7 +8,9 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { CourseData, useQuestion } from "../context/question";
+import { useSQLiteContext } from 'expo-sqlite';
 const width = Dimensions.get("window").width;
+
 
 interface InterfacCard {
   status: string
@@ -16,19 +18,33 @@ interface InterfacCard {
 }
 
 export default function Card({status, _id}: InterfacCard) {
-  const { updateCourse } = useQuestion()
+  const { setCourses } = useQuestion()
+  const db = useSQLiteContext();
 
   const getCourse = async() => {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_API}/upload?id=${_id}`)
-    const data: CourseData = await response.json()
+    try{
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API}/upload?id=${_id}`)
+      const data: CourseData = await response.json()
+      
+      const { status: updateStatus, segments } = data;
+      if (updateStatus === "successful"){
+        const {authorName, category, questions, summary, title, totalPoints, transcription} = segments[0];
+          await db.runAsync(`
+          UPDATE Courses SET status = ?, title = ?, author = ?, summary = ?, category = ?, totalPoints = ?, transcription = ?  WHERE uuid = ?`, 
+          [updateStatus, title, authorName, summary, category, totalPoints, transcription,  _id]
+        );
 
-    const { status: updateStatus } = data;
-    if (updateStatus === "successful"){
-      updateCourse(data);
+        const allRows = await db.getAllAsync('SELECT * FROM courses');
+        setCourses(allRows)
+      }else{
+        setTimeout(getCourse, 60000);
+      }
+    }catch(error){
+      console.log(error)
     }
   }
 
-  if (status === "unprocessed") {
+  if (status === "unprocessed" || status === "processed" ) {
     getCourse()
     return (
       <TouchableOpacity style={[styles.container, styles.processing]}>
@@ -64,6 +80,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    alignSelf: "center"
   },
   processing: {
     backgroundColor: "#f1f1f1", 

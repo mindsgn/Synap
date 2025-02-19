@@ -14,7 +14,7 @@ interface HeaderProps {
   status?: string;
 }
 
-export default function Header({ title = "Available Courses", status }: HeaderProps) {
+export default function Header({ title = "My Courses", status }: HeaderProps) {
   return (
     <View style={styles.headerContainer}>
       <Text style={styles.headerTitle}>{title}</Text>
@@ -29,15 +29,12 @@ const styles = StyleSheet.create({
   headerContainer: {
     width: width,
     padding: 16,
-    backgroundColor: "#6200ea", // Change to your desired background color
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#000",
   },
   spinner: {
     marginLeft: 8,

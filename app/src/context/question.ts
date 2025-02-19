@@ -34,15 +34,12 @@ type QuestionStore = {
   error: null | { message: string };
   questions: Question[];
   courses: any[],
-  realm: Realm | null;
-  getCourses: () => void;
+  setCourses: (courses: any) => void;
   setQuestion: (update: Question[]) => void;
-  setReady: (update: boolean) => void;
   generateQuiz: () => Promise<{ totalPoints: number }>;
   getContent: (subject: string) => void;
   generatContent: (subject: string, content: string) => void;
-  setRealm: (realm: Realm) => void;
-  getYoutube: (url: string) => void;
+  getYoutube: (url: string) => Promise<{_id: string, status: string, youtube: string}>;
   updateCourse: (course: any) => void;
 };
 
@@ -58,8 +55,6 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
   courses: [],
   points: 0,
   error: null,
-  realm: null,
-  setRealm: (realm: Realm) => set({ realm }),
   generateQuiz: async () => {
     try {
       const difficulty = "medium";
@@ -191,12 +186,12 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
           concepts = topic.concepts
           for (const concept of concepts) {
             // console.log(`${subject}:`, concept)
-            const assets = realm.objects<any>("Content").filtered("subject == $0", subject).toJSON();
+            /// const assets = realm.objects<any>("Content").filtered("subject == $0", subject).toJSON();
            
             
-            if (assets.length !== 0) {
+            //if (assets.length !== 0) {
               
-            }
+            //}
 
             setTimeout(() => {
               get().generatContent(subject, concept)
@@ -238,39 +233,20 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
   },
   getYoutube: async(url: string) => {
     try{
-      //const realm = get().realm;
-      // if (!realm) throw new Error("Realm is not initialized");
-
       const response = await fetch(`${process.env.EXPO_PUBLIC_API}/upload?url=${url}`, {
         method: "POST"
       })
 
-      const data = await response.json()
+      const data = await response.json();
 
-      const { _id, status, youtube } = data;
-
-      // await realm.write(() => {
-      //  const date = new Date();
-      //  realm.create("Courses", {_id: new BSON.ObjectID(_id),  status, youtube, createdAt: date, updatedAt: date})
-      //});
-
-      //@ts-expect-error
-      const courses: any[] = realm.objects("Courses");
-
-      set({ courses: courses })
-
+      return data;
     }catch(error){
-      console.log(error)
+      return null
     }
   },
-  getCourses: async() => {
+  setCourses: async(courses: any) => {
     try{
-      //const realm = get().realm;
-      // if (!realm) throw new Error("Realm is not initialized");
-      
-      //@ts-expect-error
-      // const courses: any[] = realm.objects("Courses");
-      // set({ courses: courses })
+     set({ courses })
     }catch(error){
       console.log(error)
     }
@@ -283,14 +259,6 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
       const {segments} = course;
       
       console.log(segments)
-
-    }catch(error){
-      console.log(error)
-    }
-  },
-  setReady: async () => {
-    try{
-      // const db = useSQLiteContext();
 
     }catch(error){
       console.log(error)

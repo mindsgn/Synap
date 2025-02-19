@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
-import { useRealm } from "@realm/react";
 import { useQuestion } from "@/src/context/question";
 import Button from '@/src/components/button';
 import { useRouter } from 'expo-router';
@@ -13,16 +12,11 @@ import { useSQLiteContext } from 'expo-sqlite';
 export default function HomeScreen() {
   const router = useRouter();
   const db = useSQLiteContext();
-  const { courses, setReady } = useQuestion();
+  const { courses, setCourses } = useQuestion();
 
   const getAll = async() => {
-    const test = await db.getAllAsync('SELECT * FROM students');
-    console.log(test)
-    const statement = await db.prepareAsync('INSERT INTO students (firstName, lastName, age, email) VALUES (?,?,?,?)');
-    await statement.executeAsync(["test", "test", 10, "seni@gmail.com"]);
-
-    const allRows = await db.getAllAsync('SELECT * FROM students');
-    console.log(allRows)
+    const allRows = await db.getAllAsync('SELECT * FROM courses');
+    setCourses(allRows)
   }
 
   useEffect(() => {
@@ -45,7 +39,7 @@ export default function HomeScreen() {
               <Header />
             }
             renderItem={({ item }) => 
-              <Card _id={item._id} status={item.status}/>
+              <Card _id={item.uuid} status={item.status}/>
             }
             estimatedItemSize={200}
           />
