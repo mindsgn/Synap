@@ -83,13 +83,16 @@ export default function Modal() {
   };
 
   const handleSubmit = async () => {
+    setProcessing(true);
     // Optionally include YouTube link validation before processing the form
     if (youtubeLink && !validateYoutubeLink(youtubeLink)) {
       setYoutubeError("Please enter a valid YouTube link.");
       return;
     }
 
-    getYoutube(youtubeLink);
+    await getYoutube(youtubeLink);
+    router.dismiss()
+    setProcessing(false);
   };
 
   useEffect(() => {

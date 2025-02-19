@@ -37,7 +37,6 @@ export default function Button({
           }}
         >
           <ActivityIndicator color="white" />
-          <Text style={styles.text}>{"PROCESSING"}</Text>
         </View>
       ) : (
         <Text style={styles.text}>{`${title}`.toLocaleUpperCase()}</Text>
@@ -55,6 +54,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     width: width - 20,
     borderRadius: 10,
+    alignSelf: "center"
   },
   text: {
     fontSize: 18,

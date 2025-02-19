@@ -1,55 +1,60 @@
 import { useEffect } from 'react';
-import { StyleSheet, ScrollView, Text, View, Dimensions } from 'react-native';
-import subjects from '@/src/constants/prompts';
-import { Link } from 'expo-router';
-import { useLocalSearchParams } from 'expo-router';
+import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import { useRealm } from "@realm/react";
 import { useQuestion } from "@/src/context/question";
 import Button from '@/src/components/button';
 import { useRouter } from 'expo-router';
+import { FlashList } from "@shopify/flash-list";
+import Card from '@/src/components/card';
+import Header from '@/src/components/header';
+import Empty from '@/src/components/empty';
+import { useSQLiteContext } from 'expo-sqlite';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { subject } = useLocalSearchParams() as { subject: string };
-  const realm = useRealm();
-  const setRealm = useQuestion((state) => state.setRealm);
+  const db = useSQLiteContext();
+  const { courses, setReady } = useQuestion();
+
+  const getAll = async() => {
+    const test = await db.getAllAsync('SELECT * FROM students');
+    console.log(test)
+    const statement = await db.prepareAsync('INSERT INTO students (firstName, lastName, age, email) VALUES (?,?,?,?)');
+    await statement.executeAsync(["test", "test", 10, "seni@gmail.com"]);
+
+    const allRows = await db.getAllAsync('SELECT * FROM students');
+    console.log(allRows)
+  }
 
   useEffect(() => {
-    setRealm(realm);
-  }, [realm]);
+    getAll()
+  }, []);
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <View style={{
           flex: 1, 
-          display: 'flex', 
-          justifyContent:  "center", 
-          alignItems: "center",
         }}>
-        <Text style={styles.title}>Available Subjects</Text>
         <View style={{
             flex: 1, 
-            display: 'flex', 
-            justifyContent:  "center", 
-            alignItems: "center",
           }}
         >
-          {subjects.map((subject, index) => (
-            <View key={index} style={styles.subjectCard}>
-              <Link href={{
-                pathname: '/(course)',
-                params: { subject: subject.subject },
-              }}>
-                <Text style={styles.subjectText}>{subject.subject}</Text>
-              </Link> 
-            </View>
-          ))}
+          <FlashList
+            data={courses}
+            ListEmptyComponent={<Empty onPress={() => {}} />}
+            ListHeaderComponent={
+              <Header />
+            }
+            renderItem={({ item }) => 
+              <Card _id={item._id} status={item.status}/>
+            }
+            estimatedItemSize={200}
+          />
         </View>
-        <Button title={"ADD"} onPress={() => {
+        <Button title={"ADD COURSE"} onPress={() => {
           router.push("/modal")
         }} processing={false} />
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -59,7 +64,8 @@ const styles = StyleSheet.create({
     display: "flex",
     backgroundColor: '#FFF',
     paddingTop: 50,
-    width: Dimensions.get("window").width
+    width: Dimensions.get("window").width,
+    paddingBottom: 20
   },
   title: {
     fontSize: 24,

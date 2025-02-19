@@ -3,29 +3,47 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { extractJsonData } from "@/src/hooks/extractJson";
 import subjects from "../constants/prompts";
 import Realm, { BSON } from "realm";
+import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 
-type Question = {
+export interface Question {
   question: string;
   options: string[];
   correctAnswer: number;
   explanation: string;
   points: number;
-};
+}
+
+export interface Segment {
+  authorName: string;
+  category: string;
+  questions: Question[];
+  summary: string;
+  title: string;
+  totalPoints: number;
+  transcription: string;
+}
+
+export interface CourseData {
+  segments: Segment[];
+  status: "successful" | "processing" | "failed" | "unprocessed";
+  youtube: string;
+}
 
 type QuestionStore = {
   ready: boolean;
   error: null | { message: string };
   questions: Question[];
-  content: any[],
+  courses: any[],
   realm: Realm | null;
+  getCourses: () => void;
   setQuestion: (update: Question[]) => void;
   setReady: (update: boolean) => void;
   generateQuiz: () => Promise<{ totalPoints: number }>;
   getContent: (subject: string) => void;
   generatContent: (subject: string, content: string) => void;
-  downloadYoutube: (url: string) => void;
   setRealm: (realm: Realm) => void;
   getYoutube: (url: string) => void;
+  updateCourse: (course: any) => void;
 };
 
 const genAI = new GoogleGenerativeAI(
@@ -37,7 +55,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
 export const useQuestion = create<QuestionStore>((set, get) => ({
   ready: false,
   questions: [],
-  content: [],
+  courses: [],
   points: 0,
   error: null,
   realm: null,
@@ -159,8 +177,8 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
   },
   getContent: async (subject: string = "" ) => {
     try {
-      const realm = get().realm;
-      if (!realm) throw new Error("Realm is not initialized");
+      // const realm = get().realm;
+      // if (!realm) throw new Error("Realm is not initialized");
 
       const matchingSubject: any = subjects.find(item => item.subject === subject);
       const { roadmap } = matchingSubject;
@@ -218,33 +236,64 @@ export const useQuestion = create<QuestionStore>((set, get) => ({
   setQuestion: (update: Question[]) => {
     set({ questions: update, ready: true });
   },
-  downloadYoutube: (url: string) => {},
   getYoutube: async(url: string) => {
     try{
-      const realm = get().realm;
-      if (!realm) throw new Error("Realm is not initialized");
+      //const realm = get().realm;
+      // if (!realm) throw new Error("Realm is not initialized");
 
       const response = await fetch(`${process.env.EXPO_PUBLIC_API}/upload?url=${url}`, {
         method: "POST"
       })
 
       const data = await response.json()
-      console.log(data)
 
-      /*
-      realm.write(() => {
-        realm.create('Courses', {
-          _id: new BSON.ObjectID, 
-          title: "", 
-          youtube: "",
-        });
-      });
-      */
+      const { _id, status, youtube } = data;
+
+      // await realm.write(() => {
+      //  const date = new Date();
+      //  realm.create("Courses", {_id: new BSON.ObjectID(_id),  status, youtube, createdAt: date, updatedAt: date})
+      //});
+
+      //@ts-expect-error
+      const courses: any[] = realm.objects("Courses");
+
+      set({ courses: courses })
+
     }catch(error){
       console.log(error)
     }
   },
-  setReady: (update: boolean) => {
-    set({ ready: update });
+  getCourses: async() => {
+    try{
+      //const realm = get().realm;
+      // if (!realm) throw new Error("Realm is not initialized");
+      
+      //@ts-expect-error
+      // const courses: any[] = realm.objects("Courses");
+      // set({ courses: courses })
+    }catch(error){
+      console.log(error)
+    }
+  },
+  updateCourse: async(course: CourseData) => {
+    try{
+      //const realm = get().realm;
+      //if (!realm) throw new Error("Realm is not initialized");
+      
+      const {segments} = course;
+      
+      console.log(segments)
+
+    }catch(error){
+      console.log(error)
+    }
+  },
+  setReady: async () => {
+    try{
+      // const db = useSQLiteContext();
+
+    }catch(error){
+      console.log(error)
+    }
   },
 }));
