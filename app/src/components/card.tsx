@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   TouchableOpacity,
@@ -19,6 +19,7 @@ interface InterfacCard {
 
 export default function Card({status, _id}: InterfacCard) {
   const { setCourses } = useQuestion()
+  const [ details, setDetails] = useState({title: null, author: null})
   const db = useSQLiteContext();
 
   const getCourse = async() => {
@@ -28,10 +29,10 @@ export default function Card({status, _id}: InterfacCard) {
       
       const { status: updateStatus, segments } = data;
       if (updateStatus === "successful"){
-        const {authorName, category, questions, summary, title, totalPoints, transcription} = segments[0];
+        const {authorName, category, title, totalPoints } = segments[0];
           await db.runAsync(`
-          UPDATE Courses SET status = ?, title = ?, author = ?, summary = ?, category = ?, totalPoints = ?, transcription = ?  WHERE uuid = ?`, 
-          [updateStatus, title, authorName, summary, category, totalPoints, transcription,  _id]
+          UPDATE courses SET status = ?, title = ?, author = ?, category = ?, totalPoints = ?  WHERE uuid = ?`, 
+          ["unprocessed", title, authorName, category, totalPoints,  _id]
         );
 
         const allRows = await db.getAllAsync('SELECT * FROM courses');
@@ -44,6 +45,11 @@ export default function Card({status, _id}: InterfacCard) {
     }
   }
 
+  const getDetails = async() => {
+    const row =  await db.getFirstAsync('SELECT title, author FROM courses WHERE uuid = ?', [_id]);
+    setDetails({ ...row });
+  }
+
   if (status === "unprocessed" || status === "processed" ) {
     getCourse()
     return (
@@ -53,9 +59,11 @@ export default function Card({status, _id}: InterfacCard) {
       </TouchableOpacity>
     );
   } else if (status === "successful") {
+    getDetails()
     return (
       <TouchableOpacity style={[styles.container, styles.done]}>
-        <Text style={styles.text}>Course Completed</Text>
+        <Text style={styles.title}>{details.title}</Text>
+        <Text style={styles.text}>by: {details.author}</Text>
       </TouchableOpacity>
     );
   }
@@ -87,10 +95,17 @@ const styles = StyleSheet.create({
   },
   done: {
     backgroundColor: "#d4edda",
+    flexDirection: "column",
+    alignItems: "flex-start",
   },
   text: {
     fontSize: 16,
     marginLeft: 10,
+  },
+  title: {
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: "bold"
   },
   indicator: {
     marginRight: 10,

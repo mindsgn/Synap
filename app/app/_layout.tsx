@@ -7,7 +7,7 @@ import { initializeDatabase } from "@/src/database";
 
 export default function RootLayout() {
     return (
-        <SQLiteProvider databaseName="synap.db" onInit={initializeDatabase}>
+        <SQLiteProvider databaseName="@/src/database/synap.db" onInit={initializeDatabase}>
             <Stack>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen name="modal" options={{

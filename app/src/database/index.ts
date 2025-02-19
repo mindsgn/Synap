@@ -4,19 +4,25 @@ async function initializeDatabase(database) {
     try {
         await database.execAsync(`
             PRAGMA journal_mode = WAL;
-            CREATE TABLE IF NOT EXISTS Courses ( 
-                id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                uuid status TEXT NOT NULL, 
+            CREATE TABLE IF NOT EXISTS courses ( 
+                uuid TEXT PRIMARY KEY, 
                 status TEXT NOT NULL, 
                 youtube TEXT NOT NULL, 
-                title TEXT NULL, 
-                author TEXT NULL, 
+                title TEXT NULL,
+                author TEXT NULL,
                 category TEXT NULL,
-                summary TEXT NULL,
                 totalPoints INT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS modules (
+                uuid TEXT PRIMARY KEY,
+                course_uuid TEXT REFERENCES courses(uuid),
+                summary TEXT NULL,
                 transcription TEXT NULL,
-                createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
         `);
         console.log('Database initialised')
