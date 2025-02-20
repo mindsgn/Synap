@@ -43,7 +43,7 @@ app.post('/upload', async (req: Request, res: Response) => {
     const {_id, status, youtube} = newEntry;
 
     return res.status(201).json({ _id, status, youtube });
-
+    
   } catch (error) {
     console.error(error);
     return res.status(422).json({ error: true, message: error });
