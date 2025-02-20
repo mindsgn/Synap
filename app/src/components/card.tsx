@@ -4,71 +4,134 @@ import {
   TouchableOpacity,
   Text,
   Dimensions,
-  View,
   ActivityIndicator,
 } from "react-native";
 import { CourseData, useQuestion } from "../context/question";
-import { useSQLiteContext } from 'expo-sqlite';
+import { useSQLiteContext } from "expo-sqlite";
+import { v4 as uuidv4 } from "uuid";
+import { useRouter } from "expo-router";
+
 const width = Dimensions.get("window").width;
 
-
-interface InterfacCard {
-  status: string
-  _id: string
+interface InterfaceCard {
+  status: string;
+  _id: string;
 }
 
-export default function Card({status, _id}: InterfacCard) {
-  const { setCourses } = useQuestion()
-  const [ details, setDetails] = useState({title: null, author: null})
+export default function Card({ status, _id }: InterfaceCard) {
+  const router = useRouter()
+
+  const { setCourses } = useQuestion();
+  const [details, setDetails] = useState<{ title: string | null; author: string | null }>({
+    title: null,
+    author: null,
+  });
+  const [loading, setLoading] = useState(false);
   const db = useSQLiteContext();
 
-  const getCourse = async() => {
-    try{
-      const response = await fetch(`${process.env.EXPO_PUBLIC_API}/upload?id=${_id}`)
-      const data: CourseData = await response.json()
-      
-      const { status: updateStatus, segments } = data;
-      if (updateStatus === "successful"){
-        const {authorName, category, title, totalPoints } = segments[0];
-          await db.runAsync(`
-          UPDATE courses SET status = ?, title = ?, author = ?, category = ?, totalPoints = ?  WHERE uuid = ?`, 
-          ["unprocessed", title, authorName, category, totalPoints,  _id]
+  useEffect(() => {
+    if (status === "unprocessed" || status === "processed") {
+      getCourse();
+    }
+  }, [status]);
+
+  useEffect(() => {
+    if (status === "successful") {
+      getDetails();
+    }
+  }, [status]);
+
+  const getCourse = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API}/upload?id=${_id}`);
+      const data: CourseData = await response.json();
+
+      if (data.status === "successful") {
+        const { authorName, category, title, totalPoints } = data.segments[0];
+
+        await db.runAsync(
+          `UPDATE courses SET status = ?, title = ?, author = ?, category = ?, totalPoints = ? WHERE uuid = ?`,
+          [data.status, title, authorName, category, totalPoints, _id]
         );
 
-        const allRows = await db.getAllAsync('SELECT * FROM courses');
-        setCourses(allRows)
-      }else{
+        for (const segment of data.segments) {
+          const segmentUUID = uuidv4();
+          const { summary, transcription, questions } = segment;
+
+          const segmentStatement = await db.prepareAsync(
+            `INSERT INTO modules (uuid, summary, transcription, course_uuid) VALUES (?,?,?,?)`
+          );
+          await segmentStatement.executeAsync([segmentUUID, summary, transcription, _id]);
+
+          for (const question of questions) {
+            const {correctAnswer, options, explanation, points} = question
+            
+            const questionUUID = uuidv4();
+            
+            const questionStatement = await db.prepareAsync(
+              `INSERT INTO questions (uuid, modules_uuid, correct_answer, explanation, points) VALUES (?,?,?,?,?)`
+            );
+            await questionStatement.executeAsync([questionUUID, segmentUUID, options[parseInt(`${correctAnswer}`)], explanation, points]);
+          
+            for (const option of options) {
+              const optionUUID = uuidv4();
+
+              const questionStatement = await db.prepareAsync(
+                `INSERT INTO options (uuid, questions_uuid, option ) VALUES (?,?,?)`
+              );
+              await questionStatement.executeAsync([ optionUUID, questionUUID, option ]);
+            }
+          }
+        }
+
+        const allRows = await db.getAllAsync("SELECT * FROM courses");
+        setCourses(allRows);
+      } else {
         setTimeout(getCourse, 60000);
       }
-    }catch(error){
-      console.log(error)
+    } catch (error) {
+      console.error("Error fetching course:", error);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  const getDetails = async() => {
-    const row =  await db.getFirstAsync('SELECT title, author FROM courses WHERE uuid = ?', [_id]);
-    setDetails({ ...row });
-  }
+  const getDetails = async () => {
+    try {
+      const row = await db.getFirstAsync(
+        "SELECT courses.title, courses.author FROM courses WHERE courses.uuid = ?",
+        [_id]
+      );
+      //@ts-expect-error
+      if (row) setDetails(row);
+    } catch (error) {
+      console.error("Error fetching course details:", error);
+    }
+  };
 
   if (status === "unprocessed" || status === "processed" ) {
-    getCourse()
     return (
       <TouchableOpacity style={[styles.container, styles.processing]}>
         <ActivityIndicator size="small" color="#000" style={styles.indicator} />
         <Text style={styles.text}>Please wait. Processing Course...</Text>
       </TouchableOpacity>
     );
-  } else if (status === "successful") {
-    getDetails()
+  }
+
+  if (status === "successful") {
     return (
-      <TouchableOpacity style={[styles.container, styles.done]}>
-        <Text style={styles.title}>{details.title}</Text>
-        <Text style={styles.text}>by: {details.author}</Text>
+      <TouchableOpacity style={[styles.container, styles.done]} onPress={() => {
+        router.push("/quiz")
+      }}>
+        <Text style={styles.title}>{details.title || "Unknown Title"}</Text>
+        <Text style={styles.text}>by: {details.author || "Unknown Author"}</Text>
       </TouchableOpacity>
     );
   }
 
-  // Fallback view: you might use this for other statuses
   return (
     <TouchableOpacity style={styles.container}>
       <Text style={styles.text}>Course Status Unknown</Text>
@@ -88,10 +151,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    alignSelf: "center"
+    alignSelf: "center",
   },
   processing: {
-    backgroundColor: "#f1f1f1", 
+    backgroundColor: "#f1f1f1",
   },
   done: {
     backgroundColor: "#d4edda",
@@ -105,7 +168,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     marginLeft: 10,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   indicator: {
     marginRight: 10,

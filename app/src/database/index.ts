@@ -1,5 +1,6 @@
 import { useSQLiteContext } from 'expo-sqlite';
 
+//@ts-expect-error
 async function initializeDatabase(database) {
     try {
         await database.execAsync(`
@@ -11,7 +12,7 @@ async function initializeDatabase(database) {
                 title TEXT NULL,
                 author TEXT NULL,
                 category TEXT NULL,
-                totalPoints INT NULL,
+                total_points INT NULL,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
@@ -21,6 +22,24 @@ async function initializeDatabase(database) {
                 course_uuid TEXT REFERENCES courses(uuid),
                 summary TEXT NULL,
                 transcription TEXT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS questions (
+                uuid TEXT PRIMARY KEY,
+                modules_uuid TEXT REFERENCES modules(uuid),
+                correct_answer TEXT,
+                explanation TEXT,
+                points INT,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS options (
+                uuid TEXT PRIMARY KEY,
+                questions_uuid TEXT REFERENCES questions(uuid),
+                option TEXT,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
