@@ -15,7 +15,7 @@ export default function QuestionsScreen() {
     const uniqueQuestions = new Map();
   
     for (const row of response) {
-      const questionUuid = row.question;
+      const questionUuid = row.question_uuid;
   
       if (!uniqueQuestions.has(questionUuid)) {
         uniqueQuestions.set(questionUuid, row);

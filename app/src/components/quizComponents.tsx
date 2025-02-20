@@ -132,7 +132,7 @@ export function Quiz({questions}:{questions: any[]}) {
                 {currentQuestionData.explanation}
               </Text>
             )}
-            {selected === currentQuestionData.correctAnswer && (
+            {selected === currentQuestionData.correct_answer && (
               <Text style={[styles.feedbackText, { color: "green" }]}>
                 Correct!
               </Text>
