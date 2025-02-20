@@ -29,6 +29,7 @@ async function initializeDatabase(database) {
             CREATE TABLE IF NOT EXISTS questions (
                 uuid TEXT PRIMARY KEY,
                 modules_uuid TEXT REFERENCES modules(uuid),
+                question TEXT,
                 correct_answer TEXT,
                 explanation TEXT,
                 points INT,

@@ -60,28 +60,27 @@ export default function Card({ status, _id }: InterfaceCard) {
         for (const segment of data.segments) {
           const segmentUUID = uuidv4();
           const { summary, transcription, questions } = segment;
-
           const segmentStatement = await db.prepareAsync(
             `INSERT INTO modules (uuid, summary, transcription, course_uuid) VALUES (?,?,?,?)`
           );
+
           await segmentStatement.executeAsync([segmentUUID, summary, transcription, _id]);
 
           for (const question of questions) {
-            const {correctAnswer, options, explanation, points} = question
-            
+            const {correctAnswer, options, explanation, points, question: _question} = question
             const questionUUID = uuidv4();
-            
             const questionStatement = await db.prepareAsync(
-              `INSERT INTO questions (uuid, modules_uuid, correct_answer, explanation, points) VALUES (?,?,?,?,?)`
+              `INSERT INTO questions (uuid, modules_uuid, correct_answer, question, explanation, points) VALUES (?,?,?,?,?)`
             );
-            await questionStatement.executeAsync([questionUUID, segmentUUID, options[parseInt(`${correctAnswer}`)], explanation, points]);
+
+            await questionStatement.executeAsync([questionUUID, segmentUUID, options[parseInt(`${correctAnswer}`)], _question, explanation, points]);
           
             for (const option of options) {
               const optionUUID = uuidv4();
-
               const questionStatement = await db.prepareAsync(
                 `INSERT INTO options (uuid, questions_uuid, option ) VALUES (?,?,?)`
               );
+              
               await questionStatement.executeAsync([ optionUUID, questionUUID, option ]);
             }
           }
@@ -124,7 +123,10 @@ export default function Card({ status, _id }: InterfaceCard) {
   if (status === "successful") {
     return (
       <TouchableOpacity style={[styles.container, styles.done]} onPress={() => {
-        router.push("/quiz")
+        router.push({
+          pathname: "/questions",
+          params: { uuid: _id },
+        });
       }}>
         <Text style={styles.title}>{details.title || "Unknown Title"}</Text>
         <Text style={styles.text}>by: {details.author || "Unknown Author"}</Text>

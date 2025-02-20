@@ -9,6 +9,7 @@ export default function RootLayout() {
         <SQLiteProvider databaseName="@/src/database/synap.db" onInit={initializeDatabase}>
             <Stack>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="questions" options={{ headerShown: false }} />
                 <Stack.Screen name="modal" options={{
                     headerShown: false,
                     presentation: "modal",
