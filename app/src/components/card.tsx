@@ -53,7 +53,7 @@ export default function Card({ status, _id }: InterfaceCard) {
         const { authorName, category, title, totalPoints } = data.segments[0];
 
         await db.runAsync(
-          `UPDATE courses SET status = ?, title = ?, author = ?, category = ?, totalPoints = ? WHERE uuid = ?`,
+          `UPDATE courses SET status = ?, title = ?, author = ?, category = ?, total_points = ? WHERE uuid = ?`,
           [data.status, title, authorName, category, totalPoints, _id]
         );
 
@@ -70,18 +70,18 @@ export default function Card({ status, _id }: InterfaceCard) {
             const {correctAnswer, options, explanation, points, question: _question} = question
             const questionUUID = uuidv4();
             const questionStatement = await db.prepareAsync(
-              `INSERT INTO questions (uuid, modules_uuid, correct_answer, question, explanation, points) VALUES (?,?,?,?,?)`
+              `INSERT INTO questions (uuid, modules_uuid, correct_answer, question, explanation, points) VALUES (?,?,?,?,?,?)`
             );
 
             await questionStatement.executeAsync([questionUUID, segmentUUID, options[parseInt(`${correctAnswer}`)], _question, explanation, points]);
           
             for (const option of options) {
               const optionUUID = uuidv4();
-              const questionStatement = await db.prepareAsync(
+              const optionStatement = await db.prepareAsync(
                 `INSERT INTO options (uuid, questions_uuid, option ) VALUES (?,?,?)`
               );
-              
-              await questionStatement.executeAsync([ optionUUID, questionUUID, option ]);
+
+              await optionStatement.executeAsync([ optionUUID, questionUUID, option ]);
             }
           }
         }

@@ -2,7 +2,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 
 //@ts-expect-error
 async function initializeDatabase(database) {
-    try {
+    try {        
         await database.execAsync(`
             PRAGMA journal_mode = WAL;
             CREATE TABLE IF NOT EXISTS courses ( 
@@ -12,7 +12,7 @@ async function initializeDatabase(database) {
                 title TEXT NULL,
                 author TEXT NULL,
                 category TEXT NULL,
-                total_points INT NULL,
+                total_points INT NULLr,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );

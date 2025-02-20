@@ -1,26 +1,42 @@
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
-import { useState } from "react";
-import { useQuestion } from "@/src/context/question";
+import { useEffect, useState } from "react";
 import { usePoints } from "@/src/context/points";
+import { useSQLiteContext } from "expo-sqlite";
 
-export function Quiz() {
-  const { questions, generateQuiz } = useQuestion();
+export function Quiz({questions}:{questions: any[]}) {
+  //const { questions, generateQuiz } = useQuestion();
   const { setPoints, totalPoints, points, setTotalPoints } = usePoints();
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selected, setSelected] = useState<number | null>(null);
+  const [selected, setSelected] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [options, setOptions] = useState<any[]>([]);
   const currentQuestionData = questions[currentQuestion];
+  const db = useSQLiteContext();
 
-  const handleOptionClick = (index: number) => {
+  const getOptions = async() => {
+    try{
+      const { question_uuid } = currentQuestionData;
+      const allRows = await db.getAllAsync(
+        `SELECT * FROM options WHERE questions_uuid = ?`,
+        [question_uuid]
+      );
+      setOptions(allRows)
+    }catch(error){
+      console.log(error)
+    }
+  }
+
+  const handleOptionClick = (index: string) => {
     if (!submitted) {
       setSelected(index);
     }
   };
 
   const handleSubmit = (points: number) => {
+    console.log(currentQuestionData.correct_answer, selected)
     if (selected === null) return;
-    setSubmitted(true);
-    if (selected === currentQuestionData.correctAnswer) {
+      setSubmitted(true);
+    if (selected === currentQuestionData.correct_answer) {
       setPoints(points);
     }
   };
@@ -30,6 +46,10 @@ export function Quiz() {
     setSelected(null);
     setCurrentQuestion(currentQuestion + 1);
   };
+
+  useEffect(() => {
+    getOptions();
+  },[currentQuestionData])
 
   if (currentQuestion >= questions.length) {
     return (
@@ -42,12 +62,14 @@ export function Quiz() {
         </Text>
         <TouchableOpacity
           onPress={async () => {
+            /*
             const response = await generateQuiz();
             setTotalPoints(response.totalPoints);
             setCurrentQuestion(0);
             setPoints(0);
             setSelected(null);
             setSubmitted(false);
+            */
           }}
           style={styles.button}
         >
@@ -61,60 +83,66 @@ export function Quiz() {
     <View style={styles.quizContainer}>
       <Text style={styles.subtitle}>Quiz</Text>
       <Text style={styles.question}>{currentQuestionData.question}</Text>
-      {currentQuestionData.options.map((option, index) => {
-        let backgroundColor = "#fff";
-        if (submitted) {
-          // Highlight the correct answer green and selected wrong answer red.
-          if (index === currentQuestionData.correctAnswer) {
-            backgroundColor = "#d4edda";
-          } else if (index === selected) {
-            backgroundColor = "#f8d7da";
+      {
+        options.map((option, index) => {
+          let backgroundColor = "#fff";
+          if (submitted) {
+            // Highlight the correct answer green and selected wrong answer red.
+            if (option.option === currentQuestionData.correct_answer) {
+              backgroundColor = "#d4edda";
+            } else if (option.option === selected) {
+              backgroundColor = "#f8d7da";
+            }
+          } else if (option.option === selected) {
+            backgroundColor = "#cce5ff";
           }
-        } else if (index === selected) {
-          backgroundColor = "#cce5ff";
-        }
-        return (
+          return (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleOptionClick(option.option)}
+              disabled={submitted}
+              style={[styles.optionButton, { backgroundColor }]}
+            >
+              <Text style={styles.optionText}>{option.option}</Text>
+            </TouchableOpacity>
+          );
+        })
+      }
+
+        
+      {
+        !submitted ? (
           <TouchableOpacity
-            key={index}
-            onPress={() => handleOptionClick(index)}
-            disabled={submitted}
-            style={[styles.optionButton, { backgroundColor }]}
+            onPress={() => handleSubmit(currentQuestionData.points)}
+            disabled={selected === null}
+            style={[
+              styles.button,
+              selected === null && { backgroundColor: "#aaa" },
+            ]}
           >
-            <Text style={styles.optionText}>{option}</Text>
+            <Text style={styles.buttonText}>Submit</Text>
           </TouchableOpacity>
-        );
-      })}
-      {!submitted ? (
-        <TouchableOpacity
-          onPress={() => handleSubmit(currentQuestionData.points)}
-          disabled={selected === null}
-          style={[
-            styles.button,
-            selected === null && { backgroundColor: "#aaa" },
-          ]}
-        >
-          <Text style={styles.buttonText}>Submit</Text>
-        </TouchableOpacity>
-      ) : (
-        <View style={styles.feedbackContainer}>
-          {selected !== currentQuestionData.correctAnswer && (
-            <Text style={[styles.feedbackText, { color: "red" }]}>
-              Sorry, that's incorrect.
-              {"\n"}
-              <Text style={{ fontWeight: "bold" }}>Explanation:</Text>{" "}
-              {currentQuestionData.explanation}
-            </Text>
-          )}
-          {selected === currentQuestionData.correctAnswer && (
-            <Text style={[styles.feedbackText, { color: "green" }]}>
-              Correct!
-            </Text>
-          )}
-          <TouchableOpacity onPress={handleNext} style={styles.button}>
-            <Text style={styles.buttonText}>Next Question</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        ) : (
+          <View style={styles.feedbackContainer}>
+            {selected !== currentQuestionData.correct_answer && (
+              <Text style={[styles.feedbackText, { color: "red" }]}>
+                Sorry, that's incorrect.
+                {"\n"}
+                <Text style={{ fontWeight: "bold" }}>Explanation:</Text>{" "}
+                {currentQuestionData.explanation}
+              </Text>
+            )}
+            {selected === currentQuestionData.correctAnswer && (
+              <Text style={[styles.feedbackText, { color: "green" }]}>
+                Correct!
+              </Text>
+            )}
+            <TouchableOpacity onPress={handleNext} style={styles.button}>
+              <Text style={styles.buttonText}>Next Question</Text>
+            </TouchableOpacity>
+          </View>
+        )
+      }
     </View>
   );
 }

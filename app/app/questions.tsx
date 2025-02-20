@@ -6,31 +6,54 @@ import { useLocalSearchParams }  from 'expo-router';
 import { useSQLiteContext } from "expo-sqlite";
 
 export default function QuestionsScreen() {
-  const [ready,] = useState(false)
+  const [ready, setReady] = useState(false)
+  const [questions, setQuestions] = useState<any[]>([])
   const { uuid } = useLocalSearchParams() as { uuid: string };
   const db = useSQLiteContext();
   
-  const getQuestions = async() => {
-    const row = await db.getAllAsync(
-      `SELECT 
-          c.title AS course_title,
-          c.author AS course_author,
-          m.uuid AS module_uuid,
-          q.uuid AS question_uuid,
-          q.correct_answer,
-          q.explanation,
-          q.points,
-          o.uuid AS option_uuid,
-          o.option AS option_text
-        FROM courses c
-        LEFT JOIN modules m ON c.uuid = m.course_uuid
-        LEFT JOIN questions q ON m.uuid = q.modules_uuid
-        LEFT JOIN options o ON q.uuid = o.questions_uuid
-        WHERE c.uuid = ?;`,
-      [uuid]
-    );
+  const removeDuplicateQuestions = (response: any[]): any[] => {
+    const uniqueQuestions = new Map();
+  
+    for (const row of response) {
+      const questionUuid = row.question;
+  
+      if (!uniqueQuestions.has(questionUuid)) {
+        uniqueQuestions.set(questionUuid, row);
+      }
+    }
+  
+    return Array.from(uniqueQuestions.values());
+  };
 
-    console.log(row[0])
+  const getQuestions = async() => {
+    try{
+      const response: any[] = await db.getAllAsync(
+        `SELECT DISTINCT
+            c.title AS course_title,
+            c.author AS course_author,
+            m.uuid AS module_uuid,
+            q.uuid AS question_uuid,
+            q.question,
+            q.correct_answer,
+            q.explanation,
+            q.points,
+            o.uuid AS option_uuid,
+            o.option AS option_text
+          FROM courses c
+          LEFT JOIN modules m ON c.uuid = m.course_uuid
+          LEFT JOIN questions q ON m.uuid = q.modules_uuid
+          LEFT JOIN options o ON q.uuid = o.questions_uuid
+          WHERE c.uuid = ?;`,
+        [uuid]
+      );
+
+
+      const uniqueQuestions = removeDuplicateQuestions(response);
+      setQuestions(uniqueQuestions)
+      setReady(true);
+    } catch(error){
+      console.error('Error fetching questions:', error);
+    }
   }
 
   useEffect(() => {
@@ -46,10 +69,9 @@ export default function QuestionsScreen() {
   }
 
   return (
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <Points />
-        <Quiz />
-      </ScrollView>
+      <View style={styles.quizContainer}>
+        <Quiz questions={questions}/>
+      </View>
   );
 }
 
@@ -73,13 +95,13 @@ const styles = StyleSheet.create({
     left: 0
   },
   quizContainer: {
-    padding: 16,
+    marginTop: 80,
     marginHorizontal: 16,
     marginVertical: 12,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    //borderWidth: 1,
+    //borderColor: '#ddd',
     borderRadius: 8,
-    backgroundColor: '#fff'
+    // backgroundColor: '#fff'
   },
   completionContainer: {
     padding: 16,
