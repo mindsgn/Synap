@@ -10,7 +10,8 @@ import { CourseData, useQuestion } from "../context/question";
 import { useSQLiteContext } from "expo-sqlite";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "expo-router";
-
+import { updateCourse } from "../database/courses";
+import { drizzle } from 'drizzle-orm/expo-sqlite';
 const width = Dimensions.get("window").width;
 
 interface InterfaceCard {
@@ -20,6 +21,8 @@ interface InterfaceCard {
 
 export default function Card({ status, _id }: InterfaceCard) {
   const router = useRouter()
+  const db = useSQLiteContext();
+  const database = drizzle(db);
 
   const { setCourses } = useQuestion();
   const [details, setDetails] = useState<{ title: string | null; author: string | null }>({
@@ -27,16 +30,15 @@ export default function Card({ status, _id }: InterfaceCard) {
     author: null,
   });
   const [loading, setLoading] = useState(false);
-  const db = useSQLiteContext();
 
   useEffect(() => {
-    if (status === "unprocessed" || status === "processed") {
+    if (status === "unprocessed" || status === "processed"||status === "successful") {
       getCourse();
     }
   }, [status]);
 
   useEffect(() => {
-    if (status === "successful") {
+    if (status === "unsuccessful") {
       getDetails();
     }
   }, [status]);
@@ -48,15 +50,24 @@ export default function Card({ status, _id }: InterfaceCard) {
     try {
       const response = await fetch(`${process.env.EXPO_PUBLIC_API}/upload?id=${_id}`);
       const data: CourseData = await response.json();
-
       if (data.status === "successful") {
         const { authorName, category, title, totalPoints } = data.segments[0];
+        updateCourse({
+          db: database,
+          status: data.status,
+          title,
+          authorName,
+          category,
+          totalPoints,
+          uuid: _id,
+          segments:  data.segments,
+        })
+        //await db.runAsync(
+        //  `UPDATE courses SET status = ?, title = ?, author = ?, category = ?, total_points = ? WHERE uuid = ?`,
+        //  [data.status, title, authorName, category, totalPoints, _id]
+        //);
 
-        await db.runAsync(
-          `UPDATE courses SET status = ?, title = ?, author = ?, category = ?, total_points = ? WHERE uuid = ?`,
-          [data.status, title, authorName, category, totalPoints, _id]
-        );
-
+        /*
         for (const segment of data.segments) {
           const segmentUUID = uuidv4();
           const { summary, transcription, questions } = segment;
@@ -88,6 +99,7 @@ export default function Card({ status, _id }: InterfaceCard) {
 
         const allRows = await db.getAllAsync("SELECT * FROM courses");
         setCourses(allRows);
+        */
       } else {
         setTimeout(getCourse, 60000);
       }

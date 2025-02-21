@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `courses_youtube_unique` ON `courses` (`youtube`);
