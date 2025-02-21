@@ -20,6 +20,8 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { useQuestion } from "@/src/context/question";
 import { useSQLiteContext } from "expo-sqlite";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { addCourse } from "@/src/database/courses";
 
 interface Form {
   name: string;
@@ -36,6 +38,7 @@ interface Form {
 
 export default function Modal() {
   const db = useSQLiteContext();
+  const database = drizzle(db)
   const { getYoutube, setCourses } = useQuestion();
   const [isEnabled, setIsEnabled] = useState(false);
   const [location, setLocation] = useState(null);
@@ -81,8 +84,15 @@ export default function Modal() {
 
     const {_id: uuid, status, youtube} = response;
 
-    const statement = await db.prepareAsync('INSERT INTO Courses (uuid, youtube, status) VALUES (?,?,?)');
-    await statement.executeAsync([uuid, youtube, status]);
+    //const statement = await db.prepareAsync('INSERT INTO Courses (uuid, youtube, status) VALUES (?,?,?)');
+    //await statement.executeAsync([uuid, youtube, status]);
+
+    await addCourse({
+      db: database,
+      uuid,
+      youtube,
+      status
+    }) 
 
     const allRows = await db.getAllAsync('SELECT * FROM courses');
     setCourses(allRows)

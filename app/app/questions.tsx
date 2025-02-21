@@ -19,7 +19,7 @@ export default function QuestionsScreen() {
   
       if (!uniqueQuestions.has(questionUuid)) {
         uniqueQuestions.set(questionUuid, row);
-      }
+      } 
     }
   
     return Array.from(uniqueQuestions.values());
