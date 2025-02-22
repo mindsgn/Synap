@@ -8,19 +8,22 @@ import Card from '@/src/components/card';
 import Header from '@/src/components/header';
 import Empty from '@/src/components/empty';
 import { useSQLiteContext } from 'expo-sqlite';
+import { getAllCourses } from '@/src/database/courses';
+import { drizzle } from 'drizzle-orm/expo-sqlite';
 
 export default function HomeScreen() {
   const router = useRouter();
   const db = useSQLiteContext();
+  const database = drizzle(db)
   const { courses, setCourses } = useQuestion();
 
   const getAll = async() => {
-    const allRows = await db.getAllAsync('SELECT * FROM courses');
-    setCourses(allRows)
-  }
+    const allRows = await getAllCourses({db: database});
+    setCourses(allRows);
+  };
 
   useEffect(() => {
-    getAll()
+    getAll();
   }, []);
 
   return (
