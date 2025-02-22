@@ -1,7 +1,7 @@
-import { courses, modules } from "@/src/schema/index";
+import { courses, modules, questions as questionsSchema, options as optionsSchema } from "@/src/schema/index";
 import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
-import AsyncStorage from "expo-sqlite/kv-store"
-import { eq } from "drizzle-orm"
+import AsyncStorage from "expo-sqlite/kv-store";
+import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 
 export const addCourse = async({
@@ -46,6 +46,23 @@ export const getAllCourses = async({
     }
 };
 
+export const getCourse = async({
+    db,
+    uuid
+}:{
+    db: ExpoSQLiteDatabase
+    uuid: string
+}) => {
+    try{
+        const value = AsyncStorage.getItemSync("dbInitialized");
+        if(value) return;
+        const response = await db.select().from(courses).where(eq(courses.uuid, uuid));;
+        return response;
+    }catch(error){
+        console.log(error)
+    }
+};
+
 export const updateCourse = async({
     db,
     status,
@@ -69,7 +86,7 @@ export const updateCourse = async({
         const value = AsyncStorage.getItemSync("dbInitialized");
         if(value) return;
         
-        const response = await db
+        await db
             .update(courses)
             .set({
                 status,
@@ -93,31 +110,27 @@ export const updateCourse = async({
                     }]);
 
                     for (const question of questions) {
-                        /*
                         const { correctAnswer, options, explanation, points, question: _question} = question;
                         const questionUUID = uuidv4();
 
-                        await db.insert(questions).values([{
+                        await db.insert(questionsSchema).values([{
                             uuid: questionUUID,
                             modulesUuid: segmentUUID,
                             question: _question,
-                            correctAnswer, 
+                            correctAnswer: options[parseInt(`${correctAnswer}`)], 
                             explanation,
                             points
-                        }]);
-                        */
+                        }]); 
 
-                        /*
                         for (const option of options) {
-                            const optionsUUID = uuidv4();
-
-                            await db.insert(options).values([{
-                                uuid: optionsUUID,
+                            const optionUUID = uuidv4();
+    
+                            await db.insert(optionsSchema).values([{
+                                uuid: optionUUID,
                                 questionsUuid: questionUUID,
-                                option
-                            }]);
+                                option,
+                            }]); 
                         };
-                        */
                     };
             }
     }catch(error){
@@ -140,3 +153,44 @@ export const deleteCourse = async(
         console.log(error)
     }
 };
+
+export const getQuestions = async({
+    db,
+    uuid,
+}:{
+    db: ExpoSQLiteDatabase,
+    uuid: string,
+}) => {
+    const response = await db.select({
+        course_title: courses.title,
+        course_author: courses.author,
+        module_uuid: modules.uuid,
+        question_uuid: questionsSchema.uuid,
+        question: questionsSchema.question,
+        correct_answer: questionsSchema.correctAnswer,
+        explanation: questionsSchema.explanation,
+        points: questionsSchema.points,
+        option_uuid: optionsSchema.uuid,
+        option_text: optionsSchema.option,
+      })
+      .from(courses)
+      .leftJoin(modules, eq(courses.uuid, modules.courseUuid))
+      .leftJoin(questionsSchema, eq(modules.uuid, questionsSchema.modulesUuid))
+      .leftJoin(optionsSchema, eq(questionsSchema.uuid, optionsSchema.questionsUuid))
+      .where(eq(courses.uuid, uuid));
+
+    return response
+}
+
+export const getAllOptions = async({
+    db,
+    uuid,
+}:{
+    db: ExpoSQLiteDatabase,
+    uuid: string,
+}) => {
+    const value = AsyncStorage.getItemSync("dbInitialized");
+    if(value) return;
+    const response = await db.select().from(optionsSchema).where(eq(optionsSchema.questionsUuid, uuid));;
+    return response;
+}

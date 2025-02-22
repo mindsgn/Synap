@@ -2,6 +2,8 @@ import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { usePoints } from "@/src/context/points";
 import { useSQLiteContext } from "expo-sqlite";
+import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { getAllOptions } from '@/src/database/courses';
 
 export function Quiz({questions}:{questions: any[]}) {
   //const { questions, generateQuiz } = useQuestion();
@@ -12,14 +14,16 @@ export function Quiz({questions}:{questions: any[]}) {
   const [options, setOptions] = useState<any[]>([]);
   const currentQuestionData = questions[currentQuestion];
   const db = useSQLiteContext();
+  const database = drizzle(db);
 
   const getOptions = async() => {
     try{
       const { question_uuid } = currentQuestionData;
-      const allRows = await db.getAllAsync(
-        `SELECT * FROM options WHERE questions_uuid = ?`,
-        [question_uuid]
-      );
+      const allRows = await getAllOptions({
+        db: database,
+        uuid: question_uuid
+      })
+      //@ts-ignore
       setOptions(allRows)
     }catch(error){
       console.log(error)

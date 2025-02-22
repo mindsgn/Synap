@@ -4,22 +4,25 @@ import { Quiz } from '@/src/components/quizComponents';
 import { Points } from '@/src/components/pointsComponent';
 import { useLocalSearchParams }  from 'expo-router';
 import { useSQLiteContext } from "expo-sqlite";
+import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { getQuestions as getQuestion } from '@/src/database/courses';
 
 export default function QuestionsScreen() {
   const [ready, setReady] = useState(false)
   const [questions, setQuestions] = useState<any[]>([])
   const { uuid } = useLocalSearchParams() as { uuid: string };
   const db = useSQLiteContext();
+  const database = drizzle(db);
   
   const removeDuplicateQuestions = (response: any[]): any[] => {
     const uniqueQuestions = new Map();
   
     for (const row of response) {
-      const questionUuid = row.question_uuid;
+      const question = row.question;
   
-      if (!uniqueQuestions.has(questionUuid)) {
-        uniqueQuestions.set(questionUuid, row);
-      } 
+      if (!uniqueQuestions.has(question)) {
+        uniqueQuestions.set(question, row);
+      }
     }
   
     return Array.from(uniqueQuestions.values());
@@ -27,27 +30,12 @@ export default function QuestionsScreen() {
 
   const getQuestions = async() => {
     try{
-      const response: any[] = await db.getAllAsync(
-        `SELECT DISTINCT
-            c.title AS course_title,
-            c.author AS course_author,
-            m.uuid AS module_uuid,
-            q.uuid AS question_uuid,
-            q.question,
-            q.correct_answer,
-            q.explanation,
-            q.points,
-            o.uuid AS option_uuid,
-            o.option AS option_text
-          FROM courses c
-          LEFT JOIN modules m ON c.uuid = m.course_uuid
-          LEFT JOIN questions q ON m.uuid = q.modules_uuid
-          LEFT JOIN options o ON q.uuid = o.questions_uuid
-          WHERE c.uuid = ?;`,
-        [uuid]
-      );
-
-
+      const response = await getQuestion(
+        {
+          db: database,
+          uuid
+        }
+      )
       const uniqueQuestions = removeDuplicateQuestions(response);
       setQuestions(uniqueQuestions)
       setReady(true);

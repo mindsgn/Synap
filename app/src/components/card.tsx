@@ -8,9 +8,8 @@ import {
 } from "react-native";
 import { CourseData, useQuestion } from "../context/question";
 import { useSQLiteContext } from "expo-sqlite";
-import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "expo-router";
-import { updateCourse } from "../database/courses";
+import { updateCourse, getCourse as getCourseUUID } from "../database/courses";
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 const width = Dimensions.get("window").width;
 
@@ -32,13 +31,13 @@ export default function Card({ status, _id }: InterfaceCard) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (status === "unprocessed" || status === "processed"||status === "successful") {
+    if (status === "unprocessed" || status === "processed") {
       getCourse();
     }
   }, [status]);
 
   useEffect(() => {
-    if (status === "unsuccessful") {
+    if (status === "successful") {
       getDetails();
     }
   }, [status]);
@@ -61,45 +60,7 @@ export default function Card({ status, _id }: InterfaceCard) {
           totalPoints,
           uuid: _id,
           segments:  data.segments,
-        })
-        //await db.runAsync(
-        //  `UPDATE courses SET status = ?, title = ?, author = ?, category = ?, total_points = ? WHERE uuid = ?`,
-        //  [data.status, title, authorName, category, totalPoints, _id]
-        //);
-
-        /*
-        for (const segment of data.segments) {
-          const segmentUUID = uuidv4();
-          const { summary, transcription, questions } = segment;
-          const segmentStatement = await db.prepareAsync(
-            `INSERT INTO modules (uuid, summary, transcription, course_uuid) VALUES (?,?,?,?)`
-          );
-
-          await segmentStatement.executeAsync([segmentUUID, summary, transcription, _id]);
-
-          for (const question of questions) {
-            const {correctAnswer, options, explanation, points, question: _question} = question
-            const questionUUID = uuidv4();
-            const questionStatement = await db.prepareAsync(
-              `INSERT INTO questions (uuid, modules_uuid, correct_answer, question, explanation, points) VALUES (?,?,?,?,?,?)`
-            );
-
-            await questionStatement.executeAsync([questionUUID, segmentUUID, options[parseInt(`${correctAnswer}`)], _question, explanation, points]);
-          
-            for (const option of options) {
-              const optionUUID = uuidv4();
-              const optionStatement = await db.prepareAsync(
-                `INSERT INTO options (uuid, questions_uuid, option ) VALUES (?,?,?)`
-              );
-
-              await optionStatement.executeAsync([ optionUUID, questionUUID, option ]);
-            }
-          }
-        }
-
-        const allRows = await db.getAllAsync("SELECT * FROM courses");
-        setCourses(allRows);
-        */
+        });
       } else {
         setTimeout(getCourse, 60000);
       }
@@ -112,10 +73,10 @@ export default function Card({ status, _id }: InterfaceCard) {
 
   const getDetails = async () => {
     try {
-      const row = await db.getFirstAsync(
-        "SELECT courses.title, courses.author FROM courses WHERE courses.uuid = ?",
-        [_id]
-      );
+      const row = await getCourseUUID({
+        db: database,
+        uuid: _id
+      })
       //@ts-expect-error
       if (row) setDetails(row);
     } catch (error) {
