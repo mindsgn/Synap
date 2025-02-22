@@ -1,7 +1,7 @@
 {
   "name": "recall",
   "main": "expo-router/entry",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -20,8 +20,6 @@
     "@libsql/client": "^0.14.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
-    "@realm/babel-plugin": "^0.2.0",
-    "@realm/react": "^0.11.0",
     "@shopify/flash-list": "1.7.3",
     "babel-plugin-inline-import": "^3.0.0",
     "drizzle-orm": "^0.39.3",
@@ -52,7 +50,6 @@
     "react-native-screens": "~4.4.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "realm": "^12.14.1",
     "uuid": "^11.1.0",
     "zustand": "^5.0.3"
   },

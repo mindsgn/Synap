@@ -51,7 +51,7 @@ export default function Card({ status, _id }: InterfaceCard) {
       const data: CourseData = await response.json();
       if (data.status === "successful") {
         const { authorName, category, title, totalPoints } = data.segments[0];
-        updateCourse({
+        await updateCourse({
           db: database,
           status: data.status,
           title,

@@ -15,7 +15,7 @@ export default function Empty({ onPress }: EmptyCardProps) {
   return (
     <TouchableOpacity style={styles.emptyCard} onPress={onPress}>
       <View style={styles.content}>
-        <Text style={styles.text}>+ Add New Course</Text>
+        <Text style={styles.text}>Click on "ADD COURSE" to add new course</Text>
       </View>
     </TouchableOpacity>
   );

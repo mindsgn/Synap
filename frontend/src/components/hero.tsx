@@ -26,7 +26,7 @@ function Hero({}: HeroProp) {
         fontSize={[20, 40, 60, 60]}
         marginBottom={20}
       >
-        {`Break down complex contracts into plain, easy-to-read language! `.toUpperCase()}
+        {`We help users test their knowledge on topics they've learned.`.toUpperCase()}
       </Heading>
 
       <Box

@@ -21,7 +21,7 @@ import * as Haptics from "expo-haptics";
 import { useQuestion } from "@/src/context/question";
 import { useSQLiteContext } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
-import { addCourse } from "@/src/database/courses";
+import { addCourse, getAllCourses } from "@/src/database/courses";
 
 interface Form {
   name: string;
@@ -83,20 +83,21 @@ export default function Modal() {
     };
 
     const {_id: uuid, status, youtube} = response;
+    
+    try{
+      await addCourse({
+        db: database,
+        uuid,
+        youtube,
+        status
+      });
 
-    //const statement = await db.prepareAsync('INSERT INTO Courses (uuid, youtube, status) VALUES (?,?,?)');
-    //await statement.executeAsync([uuid, youtube, status]);
-
-    await addCourse({
-      db: database,
-      uuid,
-      youtube,
-      status
-    }) 
-
-    const allRows = await db.getAllAsync('SELECT * FROM courses');
-    setCourses(allRows)
-
+      const allRows = await getAllCourses({db: database});
+      setCourses(allRows);
+    } catch(error){
+      console.log(error);
+    }
+    
     router.dismiss()
     setProcessing(false);
   };

@@ -2,7 +2,7 @@
   "expo": {
     "name": "synap AI",
     "slug": "synap-ai",
-    "version": "1.0.3",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
     "scheme": "synap",
@@ -20,7 +20,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "mindsgn.studio.synap"
     },
     "web": {
       "bundler": "metro",

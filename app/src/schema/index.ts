@@ -2,7 +2,7 @@ import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 import { relations } from 'drizzle-orm';
 
-export const courses = sqliteTable('courses', {
+export const coursesSchema = sqliteTable('courses', {
 	uuid: text('uuid').primaryKey(),
 	status: text('status').notNull(),
 	youtube: text('youtube').notNull().unique(),
@@ -14,34 +14,34 @@ export const courses = sqliteTable('courses', {
 	updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const coursesRelations = relations(courses, ({ many }) => ({
-	modules: many(modules),
+export const coursesRelations = relations(coursesSchema, ({ many }) => ({
+	modules: many(modulesSchema),
 }));
 
-export const modules = sqliteTable('modules', {
+export const modulesSchema = sqliteTable('modules', {
 	uuid: text('uuid').primaryKey(),
 	courseUuid: text('course_uuid')
 		.notNull()
-		.references(() => courses.uuid),
+		.references(() => coursesSchema.uuid),
 	summary: text('summary'),
 	transcription: text('transcription'),
 	createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 	updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const modulesRelations = relations(modules, ({ one, many }) => ({
-	course: one(courses, {
-		fields: [modules.courseUuid],
-		references: [courses.uuid],
+export const modulesRelations = relations(modulesSchema, ({ one, many }) => ({
+	course: one(coursesSchema, {
+		fields: [modulesSchema.courseUuid],
+		references: [coursesSchema.uuid],
 	}),
-	questions: many(questions),
+	questions: many(questionsSchema),
 }));
 
-export const questions = sqliteTable('questions', {
+export const questionsSchema = sqliteTable('questions', {
 	uuid: text('uuid').primaryKey(),
 	modulesUuid: text('modules_uuid')
 		.notNull()
-		.references(() => modules.uuid),
+		.references(() => modulesSchema.uuid),
 	question: text('question'),
 	correctAnswer: text('correct_answer'),
 	explanation: text('explanation'),
@@ -50,27 +50,27 @@ export const questions = sqliteTable('questions', {
 	updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const questionsRelations = relations(questions, ({ one, many }) => ({
-	module: one(modules, {
-		fields: [questions.modulesUuid],
-		references: [modules.uuid],
+export const questionsRelations = relations(questionsSchema, ({ one, many }) => ({
+	module: one(modulesSchema, {
+		fields: [questionsSchema.modulesUuid],
+		references: [modulesSchema.uuid],
 	}),
-	options: many(options),
+	options: many(optionsSchema),
 }));
 
-export const options = sqliteTable('options', {
+export const optionsSchema = sqliteTable('options', {
 	uuid: text('uuid').primaryKey(),
 	questionsUuid: text('questions_uuid')
 		.notNull()
-		.references(() => questions.uuid),
+		.references(() => questionsSchema.uuid),
 	option: text('option'),
 	createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 	updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const optionsRelations = relations(options, ({ one }) => ({
-	question: one(questions, {
-		fields: [options.questionsUuid],
-		references: [questions.uuid],
+export const optionsRelations = relations(optionsSchema, ({ one }) => ({
+	question: one(questionsSchema, {
+		fields: [optionsSchema.questionsUuid],
+		references: [questionsSchema.uuid],
 	}),
 }));
