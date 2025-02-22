@@ -18,8 +18,13 @@ export default function HomeScreen() {
   const { courses, setCourses } = useQuestion();
 
   const getAll = async() => {
-    const allRows = await getAllCourses({db: database});
-    setCourses(allRows);
+    try {
+      const allRows = await getAllCourses({db: database});
+      if (!allRows) return;
+      setCourses(allRows);
+    } catch (error) {
+      console.error('Failed to fetch courses:', error);
+    }
   };
 
   useEffect(() => {

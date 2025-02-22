@@ -1,4 +1,4 @@
-import { courses, modules, questions as questionsSchema, options as optionsSchema } from "@/src/schema/index";
+import { coursesSchema, modulesSchema, questionsSchema, optionsSchema } from "@/src/schema/index";
 import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import AsyncStorage from "expo-sqlite/kv-store";
 import { eq } from "drizzle-orm";
@@ -19,12 +19,12 @@ export const addCourse = async({
         const value = AsyncStorage.getItemSync("dbInitialized");
         if(value) return;
 
-        await db.insert(courses).values([{
+        await db.insert(coursesSchema).values([{
             uuid,
             youtube,
             status
         }]).onConflictDoNothing({
-            target: courses.youtube
+            target: coursesSchema.youtube
         });
     }catch(error){
         console.log(error)
@@ -39,7 +39,7 @@ export const getAllCourses = async({
     try{
         const value = AsyncStorage.getItemSync("dbInitialized");
         if(value) return;
-        const response = await db.select().from(courses);
+        const response = await db.select().from(coursesSchema);
         return response;
     }catch(error){
         console.log(error)
@@ -56,7 +56,7 @@ export const getCourse = async({
     try{
         const value = AsyncStorage.getItemSync("dbInitialized");
         if(value) return;
-        const response = await db.select().from(courses).where(eq(courses.uuid, uuid));;
+        const response = await db.select().from(coursesSchema).where(eq(coursesSchema.uuid, uuid));;
         return response;
     }catch(error){
         console.log(error)
@@ -87,7 +87,7 @@ export const updateCourse = async({
         if(value) return;
         
         await db
-            .update(courses)
+            .update(coursesSchema)
             .set({
                 status,
                 title,
@@ -96,13 +96,13 @@ export const updateCourse = async({
                 totalPoints,
             })
             .where(eq(
-                courses.uuid, uuid
+                coursesSchema.uuid, uuid
             ))
 
             for (const segment of segments) {
                 const segmentUUID = uuidv4();
                 const { summary, transcription, questions } = segment;
-                    await db.insert(modules).values([{
+                    await db.insert(modulesSchema).values([{
                         uuid: segmentUUID,
                         courseUuid: uuid,
                         summary,
@@ -148,7 +148,7 @@ export const deleteCourse = async(
     }
 ) => {
     try{
-        await db.delete(courses).where(eq(courses.uuid, uuid));
+        await db.delete(coursesSchema).where(eq(coursesSchema.uuid, uuid));
     }catch(error){
         console.log(error)
     }
@@ -162,9 +162,9 @@ export const getQuestions = async({
     uuid: string,
 }) => {
     const response = await db.select({
-        course_title: courses.title,
-        course_author: courses.author,
-        module_uuid: modules.uuid,
+        course_title: coursesSchema.title,
+        course_author: coursesSchema.author,
+        module_uuid: modulesSchema.uuid,
         question_uuid: questionsSchema.uuid,
         question: questionsSchema.question,
         correct_answer: questionsSchema.correctAnswer,
@@ -173,11 +173,11 @@ export const getQuestions = async({
         option_uuid: optionsSchema.uuid,
         option_text: optionsSchema.option,
       })
-      .from(courses)
-      .leftJoin(modules, eq(courses.uuid, modules.courseUuid))
-      .leftJoin(questionsSchema, eq(modules.uuid, questionsSchema.modulesUuid))
+      .from(coursesSchema)
+      .leftJoin(modulesSchema, eq(coursesSchema.uuid, modulesSchema.courseUuid))
+      .leftJoin(questionsSchema, eq(modulesSchema.uuid, questionsSchema.modulesUuid))
       .leftJoin(optionsSchema, eq(questionsSchema.uuid, optionsSchema.questionsUuid))
-      .where(eq(courses.uuid, uuid));
+      .where(eq(coursesSchema.uuid, uuid));
 
     return response
 }
