@@ -77,8 +77,7 @@ export default function Card({ status, _id }: InterfaceCard) {
         db: database,
         uuid: _id
       })
-      //@ts-expect-error
-      if (row) setDetails(row);
+      if (row) setDetails(row[0]);
     } catch (error) {
       console.error("Error fetching course details:", error);
     }
@@ -94,6 +93,7 @@ export default function Card({ status, _id }: InterfaceCard) {
   }
 
   if (status === "successful") {
+
     return (
       <TouchableOpacity style={[styles.container, styles.done]} onPress={() => {
         router.push({
