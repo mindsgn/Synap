@@ -34,15 +34,24 @@ app.post('/upload', async (req: Request, res: Response) => {
       throw new Error('Missing or invalid URL');
     }
 
-    const newUpload = new UploadSchema({
-      youtube:  url,
-      status: "unprocessed",
-    })
+    const existingUpload = await UploadSchema.findOne({ youtube: url });
 
-    const newEntry = await newUpload.save();
-    const {_id, status, youtube} = newEntry;
+    if (existingUpload) {
+      // If the URL exists, return the existing entry
+      const { _id, status, youtube, segments } = existingUpload;
+      return res.status(200).json({ _id, status, youtube, segments });
+    } else {
+      // If the URL doesn't exist, create a new entry
+      const newUpload = new UploadSchema({
+        youtube: url,
+        status: "unprocessed",
+      });
 
-    return res.status(201).json({ _id, status, youtube });
+      const newEntry = await newUpload.save();
+      const { _id, status, youtube } = newEntry;
+
+      return res.status(201).json({ _id, status, youtube });
+    }
     
   } catch (error) {
     console.error(error);
