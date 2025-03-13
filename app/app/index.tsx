@@ -10,6 +10,7 @@ import Empty from '@/src/components/empty';
 import { useSQLiteContext } from 'expo-sqlite';
 import { getAllCourses } from '@/src/database/courses';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
+import CalendarHeatmap from 'react-native-calendar-heatmap';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -33,6 +34,15 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <CalendarHeatmap
+        endDate={new Date('1994-01-01')}
+        numDays={600}
+        values={[
+          { date: '2016-01-01' },
+          { date: '2016-01-22' },
+          { date: '2016-01-30' },
+        ]}
+      />
       <View style={{
           flex: 1, 
         }}>

@@ -74,3 +74,20 @@ export const optionsRelations = relations(optionsSchema, ({ one }) => ({
 		references: [questionsSchema.uuid],
 	}),
 }));
+
+export const pointsSchema = sqliteTable('points', {
+	uuid: text('uuid').primaryKey(),
+	questionsUuid: text('questions_uuid')
+		.notNull()
+		.references(() => questionsSchema.uuid),
+	correct: integer('correct', { mode: 'boolean' }).notNull(),
+	createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+	updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const pointsRelations = relations(pointsSchema, ({ one }) => ({
+	question: one(questionsSchema, {
+		fields: [pointsSchema.questionsUuid],
+		references: [questionsSchema.uuid],
+	}),
+}));

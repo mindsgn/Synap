@@ -21,7 +21,7 @@ import * as Haptics from "expo-haptics";
 import { useQuestion } from "@/src/context/question";
 import { useSQLiteContext } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
-import { addCourse, getAllCourses } from "@/src/database/courses";
+import { addCourse, getAllCourses, updateCourse } from "@/src/database/courses";
 
 interface Form {
   name: string;
@@ -84,19 +84,54 @@ export default function Modal() {
 
     const {_id: uuid, status, youtube} = response;
     
-    try{
-      await addCourse({
-        db: database,
-        uuid,
-        youtube,
-        status
-      });
+    /*
+    if(status==="successful"){
+      try{
+        await addCourse({
+          db: database,
+          uuid,
+          youtube,
+          status
+        });
 
-      const allRows = await getAllCourses({db: database});
-      setCourses(allRows);
-    } catch(error){
-      console.log(error);
+        //@ts-ignore
+        const { segments } = response;
+
+        const { authorName, category, title, totalPoints } = segments;
+
+        await updateCourse({
+          db: database,
+          status: status,
+          title,
+          authorName,
+          category,
+          totalPoints,
+          uuid,
+          segments:  segments,
+        });
+
+
+        const allRows = await getAllCourses({db: database});
+        setCourses(allRows);
+      } catch(error){
+        console.log(error);
+      }
+    }else{
+      try{
+        await addCourse({
+          db: database,
+          uuid,
+          youtube,
+          status
+        });
+
+        const allRows = await getAllCourses({db: database});
+        setCourses(allRows);
+      } catch(error){
+        console.log(error);
+      }
     }
+    */
     
     router.dismiss()
     setProcessing(false);
