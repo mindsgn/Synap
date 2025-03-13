@@ -37,11 +37,9 @@ app.post('/upload', async (req: Request, res: Response) => {
     const existingUpload = await UploadSchema.findOne({ youtube: url });
 
     if (existingUpload) {
-      // If the URL exists, return the existing entry
       const { _id, status, youtube, segments } = existingUpload;
       return res.status(200).json({ _id, status, youtube, segments });
     } else {
-      // If the URL doesn't exist, create a new entry
       const newUpload = new UploadSchema({
         youtube: url,
         status: "unprocessed",
